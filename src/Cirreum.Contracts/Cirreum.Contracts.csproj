@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>Cirreum.Contracts</AssemblyName>
+		<RootNamespace>Cirreum</RootNamespace>
+		<Description>The contract surface of the Cirreum framework. The cross-host abstractions, vocabulary, and value types a Cirreum application programs against — the Conductor (CQRS) surface, Caching, State, Presence, RemoteServices, FileSystem, the Invocation seam, and the Authorization-pillar vocabulary and contracts. Implementations ship in Cirreum.Domain. The cross-host triad: Cirreum.Kernel (primitives) → Cirreum.Contracts (contracts) → Cirreum.Domain (implementations).</Description>
+		<PackageTags>cirreum;contracts;abstractions;conductor;caching;authorization;framework</PackageTags>
+		<!--
+			IsAotCompatible is intentionally NOT set. Several patterns absorbed from Cirreum.Core 5.x
+			(JSON serialization in CloningExtensions, reflection-based dispatch, etc.) are not
+			AOT-safe today. Future patch work may refactor to source-generator-based serialization +
+			RequiresUnreferencedCode/RequiresDynamicCode annotations, after which IsAotCompatible=true
+			can be re-enabled honestly.
+		-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!--
+			Cirreum.Contracts references the published Cirreum foundation packages as PackageReferences:
+			Cirreum.Kernel (the L1 base, published) and Cirreum.Result. External NuGets as usual.
+			No ProjectReferences — every Cirreum dependency is consumed as a published package.
+
+			Pattern A: pure abstractions only. Direct PackageReferences are limited to what the
+			interface signatures themselves need (Result for handler return types; CsvHelper for
+			ICsvFileBuilder/Reader signature types). Concrete impls (and their richer dep tree —
+			FluentValidation, Microsoft.Extensions.Caching.Memory, etc.) live in Cirreum.Domain.
+		-->
+		<PackageReference Include="Cirreum.Kernel" Version="1.0.1" />
+		<PackageReference Include="Cirreum.Result" Version="1.0.16" />
+		<PackageReference Include="CsvHelper" Version="33.1.0" />
+	</ItemGroup>
+
+	<!-- InternalsVisibleTo: Local Development Only -->
+	<ItemGroup Label="InternalsVisibleTo" Condition="'$(IsLocalBuild)' == 'true'">
+		<InternalsVisibleTo Include="Cirreum.Contracts.Tests" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,48 @@
+﻿namespace Cirreum.Conductor;
+
+/// <summary>
+/// Dispatches requests to their appropriate handlers.
+/// </summary>
+public interface IDispatcher {
+
+	/// <summary>
+	/// Dispatches the specified request asynchronously and returns a <see cref="Result"/>.
+	/// </summary>
+	/// <remarks>
+	/// This overload is intended for requests that do not return a typed response,
+	/// such as commands that perform state changes or side effects.
+	/// </remarks>
+	/// <param name="request">The request to dispatch. Must implement <see cref="IOperation"/>.</param>
+	/// <param name="cancellationToken">
+	/// A token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.
+	/// </param>
+	/// <returns>
+	/// A <see cref="Task{TResult}"/> representing the asynchronous operation.
+	/// The returned <see cref="Result"/> indicates whether the request was handled successfully.
+	/// </returns>
+	Task<Result> DispatchAsync<TOperation>(
+		TOperation request,
+		CancellationToken cancellationToken = default)
+		where TOperation : IOperation;
+
+	/// <summary>
+	/// Dispatches the specified request asynchronously and returns a <see cref="Result{T}"/> containing the response.
+	/// </summary>
+	/// <remarks>
+	/// This overload is intended for requests that return a typed response,
+	/// such as queries that retrieve data or commands that return confirmation values.
+	/// </remarks>
+	/// <typeparam name="TResultValue">The type of the response returned by the request.</typeparam>
+	/// <param name="request">The request to dispatch. Must implement <see cref="IOperation{TResultValue}"/>.</param>
+	/// <param name="cancellationToken">
+	/// A token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.
+	/// </param>
+	/// <returns>
+	/// A <see cref="Task{TResult}"/> representing the asynchronous operation.
+	/// The returned <see cref="Result{T}"/> contains the response of type <typeparamref name="TResultValue"/>.
+	/// </returns>
+	Task<Result<TResultValue>> DispatchAsync<TResultValue>(
+		IOperation<TResultValue> request,
+		CancellationToken cancellationToken = default);
+
+}
