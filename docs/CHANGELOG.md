@@ -12,6 +12,18 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-05
+
+### Changed
+
+- Bumped `Cirreum.Result` `1.0.16` → `2.0.0`. This propagates the `Result`/`Result<T>`
+  System.Text.Json round-trip fix (a serialized success no longer deserializes as a
+  failure), the `IErrorState` opt-in error-state contract, the `SurrogateResultException`
+  carrier + `HasError` matchers, and the rewritten pagination types
+  (`SliceResult`/`CursorResult`/`PagedResult`). Contracts' own contract surface is
+  unchanged; consumers that use the re-exposed pagination types via Contracts should
+  review the `Cirreum.Result` 2.0.0 migration notes.
+
 ## [1.0.0] - 2026-06-04
 
 ### Added
