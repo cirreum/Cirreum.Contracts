@@ -4,7 +4,7 @@ namespace Cirreum.Caching;
 /// The resolved expiration policy for a single cache operation — the absolute (L2), local (L1), and
 /// failure expirations passed to <see cref="ICacheService"/> on each call. The framework builds this at
 /// runtime from the configured defaults/overrides; it is <em>not</em> bound from configuration (the
-/// config-time shape is <see cref="Cirreum.Caching.Configuration.CacheExpirationOverride"/>).
+/// config-time shape is <see cref="Configuration.CacheExpirationOverride"/>).
 /// </summary>
 /// <param name="Expiration">
 /// The absolute expiration duration for the cache entry. Applied to distributed (L2)

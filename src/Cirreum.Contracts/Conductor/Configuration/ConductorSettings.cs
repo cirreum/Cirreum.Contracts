@@ -3,7 +3,6 @@ namespace Cirreum.Conductor.Configuration;
 {
   "Cirreum": {
 	"Cache": {
-	  "Provider": "InMemory",
 	  "DefaultExpiration": {
 		"Expiration": "00:05:00",
 		"LocalExpiration": "00:02:00",

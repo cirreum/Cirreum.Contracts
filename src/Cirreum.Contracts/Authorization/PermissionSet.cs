@@ -22,7 +22,13 @@ using System.Collections;
 /// sealed and fully immutable after construction.
 /// </para>
 /// </remarks>
-public sealed class PermissionSet : IReadOnlyList<Permission> {
+/// <remarks>
+/// Constructs a set from the supplied permissions. The items are copied into an internal
+/// array; the set is immutable thereafter. Callers that need deduplication or validation
+/// (e.g. AND-semantics across stacked attributes) perform it before construction.
+/// </remarks>
+/// <param name="items">The permissions to include.</param>
+public sealed class PermissionSet(IReadOnlyList<Permission> items) : IReadOnlyList<Permission> {
 
 	/// <summary>
 	/// Shared empty set. Returned wherever a query or filter produces no results, so callers
@@ -30,17 +36,7 @@ public sealed class PermissionSet : IReadOnlyList<Permission> {
 	/// </summary>
 	public static readonly PermissionSet Empty = new([]);
 
-	private readonly Permission[] _items;
-
-	/// <summary>
-	/// Constructs a set from the supplied permissions. The items are copied into an internal
-	/// array; the set is immutable thereafter. Callers that need deduplication or validation
-	/// (e.g. AND-semantics across stacked attributes) perform it before construction.
-	/// </summary>
-	/// <param name="items">The permissions to include.</param>
-	public PermissionSet(IReadOnlyList<Permission> items) {
-		this._items = items as Permission[] ?? [.. items];
-	}
+	private readonly Permission[] _items = items as Permission[] ?? [.. items];
 
 	/// <inheritdoc />
 	public int Count => this._items.Length;

@@ -5,7 +5,7 @@ namespace Cirreum.Caching.Configuration;
 /// Any field left <see langword="null"/> falls through to the global default
 /// (<see cref="CacheSettings.DefaultExpiration"/>). Reused as the global default and as the value type
 /// for per-consumer override maps (e.g. the Conductor's per-query overrides). The runtime, resolved
-/// counterpart handed to <c>ICacheService</c> is <see cref="Cirreum.Caching.CacheExpirationPolicy"/>.
+/// counterpart handed to <c>ICacheService</c> is <see cref="CacheExpirationPolicy"/>.
 /// </summary>
 public class CacheExpirationOverride {
 

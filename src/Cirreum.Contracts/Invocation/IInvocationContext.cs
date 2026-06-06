@@ -1,7 +1,7 @@
 namespace Cirreum.Invocation;
 
-using System.Security.Claims;
 using Cirreum.Invocation.Connections;
+using System.Security.Claims;
 
 /// <summary>
 /// Per-message ambient context for an inbound invocation into the framework. Populated

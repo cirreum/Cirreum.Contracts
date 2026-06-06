@@ -1,13 +1,11 @@
 namespace Cirreum.Conductor.Configuration;
 
-using Cirreum.Caching;
 using Cirreum.Caching.Configuration;
 
 /*
 {
   "Cirreum": {
 	"Cache": {
-	  "Provider": "InMemory", // Hybrid, Distributed, None
 	  "DefaultExpiration": {
 		"Expiration": "00:05:00", // L2 cache service
 		"LocalExpiration": "00:02:00", // L1 in-process cache
