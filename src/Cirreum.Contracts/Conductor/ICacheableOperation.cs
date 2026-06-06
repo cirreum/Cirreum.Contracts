@@ -1,6 +1,7 @@
 namespace Cirreum.Conductor;
 
 using Cirreum.Caching;
+using Cirreum.Caching.Configuration;
 
 /// <summary>
 /// Non-generic marker for cacheable operations. Allows runtime detection of cacheability
@@ -47,7 +48,7 @@ public interface ICacheableOperation<out TResultValue> : ICacheableOperation, IO
 	/// code-level defaults; configuration can override (per-operation type, category-wide).
 	/// Defaults to <see cref="CacheSettings.DefaultExpiration"/> when unspecified.
 	/// </summary>
-	CacheExpirationSettings CacheExpiration => new();
+	CacheExpirationPolicy CacheExpiration => new();
 
 	/// <summary>
 	/// Tags for bulk cache invalidation. Cannot be overridden by configuration. Tags

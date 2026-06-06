@@ -12,6 +12,31 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Removed
+
+- **`CacheProvider` enum and `CacheSettings.Provider`.** Cache provider selection is now **code-first**:
+  the registration call is the choice — `AddCirreumCaching` for the base/no-op, then
+  `AddInMemoryCacheService` / `AddHybridCacheService` / `AddDistributedCacheService` to opt into a
+  provider. The appsettings `Cirreum:Cache:Provider` knob was redundant (it could never select a provider
+  whose package wasn't referenced) and is gone. `CacheSettings` keeps `DefaultExpiration` and TTL tuning.
+
+### Changed
+
+- **Renamed `QueryCacheOverride` → `CacheExpirationOverride`.** It is the general cache-expiration override
+  (used for the global default `CacheSettings.DefaultExpiration` and per-consumer override maps such as the
+  Conductor's per-query overrides), not query-specific.
+- `ICacheService` documentation reworded to reflect code-first provider selection.
+- **Moved `CacheSettings` and `CacheExpirationOverride` into the `Cirreum.Caching.Configuration`
+  namespace** — separating app-author *configuration* types from the runtime caching surface (matches
+  the `Cirreum.Conductor.Configuration` convention).
+- **Renamed `CacheExpirationSettings` → `CacheExpirationPolicy`** — it is the immutable per-operation
+  expiration spec passed to `ICacheService` at runtime, *not* configuration (the config-time shape is
+  `CacheExpirationOverride`). The new name also avoids the clash with the
+  `ICacheableOperation.CacheExpiration` property.
+
+> These are breaking, shipped as a pre-adoption patch via `-AllowBreakingPatch` (essentially zero
+> consumers). First step of the bottom-up caching-foundation finalize.
+
 ## [1.1.0] - 2026-06-05
 
 ### Changed

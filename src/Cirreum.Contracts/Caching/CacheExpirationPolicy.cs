@@ -1,9 +1,10 @@
-﻿namespace Cirreum.Caching;
+namespace Cirreum.Caching;
 
 /// <summary>
-/// Expiration policy for a single cache entry. Participants (query caching, grant
-/// reach caching, etc.) supply an instance per cache operation; the underlying
-/// <see cref="ICacheService"/> implementation interprets the values.
+/// The resolved expiration policy for a single cache operation — the absolute (L2), local (L1), and
+/// failure expirations passed to <see cref="ICacheService"/> on each call. The framework builds this at
+/// runtime from the configured defaults/overrides; it is <em>not</em> bound from configuration (the
+/// config-time shape is <see cref="Cirreum.Caching.Configuration.CacheExpirationOverride"/>).
 /// </summary>
 /// <param name="Expiration">
 /// The absolute expiration duration for the cache entry. Applied to distributed (L2)
@@ -21,7 +22,7 @@
 /// to avoid caching transient failures for too long. If <see langword="null"/>, uses
 /// the standard <paramref name="Expiration"/>.
 /// </param>
-public sealed record CacheExpirationSettings(
+public sealed record CacheExpirationPolicy(
 	TimeSpan? Expiration = null,
 	TimeSpan? LocalExpiration = null,
 	TimeSpan? FailureExpiration = null

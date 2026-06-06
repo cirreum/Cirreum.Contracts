@@ -1,6 +1,7 @@
 namespace Cirreum.Conductor.Configuration;
 
 using Cirreum.Caching;
+using Cirreum.Caching.Configuration;
 
 /*
 {
@@ -47,5 +48,5 @@ public class ConductorCacheSettings {
 	/// <example>
 	/// "GetCriticalUserQuery": { "Expiration": "00:01:00" }
 	/// </example>
-	public Dictionary<string, QueryCacheOverride> QueryOverrides { get; set; } = [];
+	public Dictionary<string, CacheExpirationOverride> QueryOverrides { get; set; } = [];
 }

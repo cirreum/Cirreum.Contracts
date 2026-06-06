@@ -5,9 +5,10 @@ namespace Cirreum.Caching;
 /// tag-based invalidation semantics that any Cirreum subsystem can consume.
 /// </summary>
 /// <remarks>
-/// The active implementation is selected by <see cref="CacheSettings.Provider"/>.
-/// A no-op and a single-instance in-memory implementation ship in the framework; distributed and hybrid
-/// providers are supplied by infrastructure packages.
+/// The active implementation is selected <em>in code</em> via the caching registration — the no-op
+/// default, or a provider's <c>Add*CacheService</c> method. A no-op and a single-instance in-memory
+/// implementation ship in the framework; distributed and hybrid providers are supplied by infrastructure
+/// packages.
 /// </remarks>
 public interface ICacheService {
 
@@ -25,7 +26,7 @@ public interface ICacheService {
 	ValueTask<TResultValue> GetOrCreateAsync<TResultValue>(
 		string cacheKey,
 		Func<CancellationToken, ValueTask<TResultValue>> factory,
-		CacheExpirationSettings settings,
+		CacheExpirationPolicy settings,
 		string[]? tags = null,
 		CancellationToken cancellationToken = default);
 
