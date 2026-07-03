@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-03
+
 ### Removed
 
 - **`CacheProvider` enum and `CacheSettings.Provider`.** Cache provider selection is now **code-first**:
