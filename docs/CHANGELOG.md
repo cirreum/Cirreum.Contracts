@@ -12,6 +12,10 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`IUserProfileEnrichmentBuilder`, `IGraphEnabledBuilder`, `IExternalGraphEnabledBuilder`** — the profile-enrichment builder family, relocated here from `Cirreum.AuthenticationProvider` per [ADR-0026](../../../DevOps/docs/adr/0026-profile-enrichment-placement.md). These are host-agnostic (any host may enrich a user's profile after authentication, regardless of which — or whether any — auth scheme is active), the same shape of variance `IUserPresenceBuilder` already has here. `IUserProfileEnrichmentBuilder` no longer extends `IAuthenticationBuilder` — it never needed that interface's server-only `AuthBuilder`/`Configuration` members, and inheriting them silently broke every Blazor WebAssembly implementer (there is no server-side `AuthenticationBuilder` on a WASM client). Default enricher implementations ship in `Cirreum.Domain`.
+
 ## [1.1.1] - 2026-07-03
 
 ### Removed

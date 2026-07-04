@@ -18,6 +18,7 @@ Cirreum.Contracts defines:
 - **Caching** — `ICacheService` (get-or-create + tag-based invalidation), `CacheProvider`, `CacheSettings`, `CacheExpirationSettings`
 - **State** — cross-host state abstractions (`IStateContainer`, `IStateManager`, `IStatePersistence`, `IScopedNotificationState`, `ISessionState`, …) and the `Notification` shape
 - **Presence** — `IUserPresenceService`, `IUserPresenceMonitor`, `UserPresence`, `PresenceStatus`
+- **Profile Enrichment** — `IUserProfileEnrichmentBuilder`, `IGraphEnabledBuilder`, `IExternalGraphEnabledBuilder` — the host-agnostic builder seam any host (server, Blazor WebAssembly, …) uses to configure post-authentication profile enrichment, independent of which (or whether any) auth scheme is active; default enricher implementations ship in `Cirreum.Domain`
 - **RemoteServices** — `IRemoteConnection`, connection state, `RemoteServiceOptions`
 - **FileSystem + CSV** — `IFileSystem`, `ICsvFileBuilder` / `ICsvFileReader`, `CsvOptions`, `PathType`
 - **Invocation** — the `HttpContext`-free invocation seam (`IInvocationContext`, `IInvocationContextAccessor`, `IInvocationConnection`, `IConnectionEstablishmentContributor`, `DisconnectInfo`)
