@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-05
+
 ### Added
 
 - **`PromotedUser`** (`ClaimsPrincipal?`) joins the connection-ownership surface — the nullable
