@@ -2,11 +2,12 @@ namespace Cirreum.Invocation.Connections;
 
 /// <summary>
 /// Per-server index of active long-lived <see cref="IInvocationConnection"/> instances,
-/// keyed by the authenticated subject (and connection id). Maintained by per-source
-/// registrars in <c>Cirreum.Services.Server</c> and consumed by the
-/// framework-shipped connection-terminator handler in <c>Cirreum.Runtime.Server</c>
-/// to act on <c>SessionTerminationRequested</c> and
-/// <c>CredentialRevoked</c> auth events (from Cirreum.Authentication.Events).
+/// keyed by connection id and queryable by authenticated subject. Implemented and fed by
+/// <c>Cirreum.Services.Server</c> (a framework-shipped <c>IConnectionLifecycle</c> feeds
+/// it through the source adapters' connect/disconnect hooks) and consumed by the
+/// framework-shipped connection-terminator handler in the same package to act on
+/// <c>CredentialRevoked</c>, <c>UserAccountDisabled</c>, and
+/// <c>SessionTerminationRequested</c> auth events (from Cirreum.Authentication.Events).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -39,6 +40,11 @@ public interface IInvocationConnectionRegistry {
 	/// matches <paramref name="subject"/>. Empty when no matches. Snapshot semantics —
 	/// safe to enumerate concurrently with registrations/unregistrations.
 	/// </summary>
+	/// <remarks>
+	/// Implementations resolve each connection's subject from its
+	/// <see cref="IInvocationConnection.EffectiveUser"/>, so a connection promoted
+	/// mid-flight via Two-Phase Auth matches under its promoted identity.
+	/// </remarks>
 	IEnumerable<IInvocationConnection> FindBySubject(string subject);
 
 	/// <summary>

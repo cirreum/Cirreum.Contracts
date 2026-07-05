@@ -1,5 +1,6 @@
 namespace Cirreum.Invocation.Connections;
 
+using Cirreum.Authentication;
 using System.Security.Claims;
 
 /// <summary>
@@ -28,6 +29,39 @@ public interface IInvocationConnection {
 	/// The authenticated principal resolved at upgrade. Immutable post-upgrade.
 	/// </summary>
 	ClaimsPrincipal User { get; }
+
+	/// <summary>
+	/// The connection's <em>effective</em> principal: the Two-Phase Auth promoted principal
+	/// when one has been stamped (via <c>connection.Promote(...)</c> in
+	/// <c>Cirreum.Runtime.AuthenticationProvider</c>), otherwise the upgrade-time
+	/// <see cref="User"/>. Consumers that reason about "who owns this connection" — the
+	/// per-invocation contexts, the connection registry's subject lookup, the
+	/// connection-terminator's session matching, app lifecycle hooks and diagnostics —
+	/// should read this member, not <see cref="User"/>.
+	/// </summary>
+	/// <remarks>
+	/// <see cref="User"/> stays immutable post-upgrade by contract; promotion decorates the
+	/// connection through its <see cref="Items"/> bag (under
+	/// <see cref="AuthenticationContextKeys.PromotedPrincipal"/>) rather than mutating it.
+	/// Re-promotion overwrites the slot, so this member always reflects the most recent
+	/// promotion. Framework adapters snapshot this value per invocation, so a promotion
+	/// takes effect from the next invocation on the connection.
+	/// </remarks>
+	ClaimsPrincipal EffectiveUser =>
+		this.Items.TryGetValue(AuthenticationContextKeys.PromotedPrincipal, out var promoted)
+			&& promoted is ClaimsPrincipal principal
+				? principal
+				: this.User;
+
+	/// <summary>
+	/// <see langword="true"/> when the connection has been promoted mid-flight via Two-Phase
+	/// Auth (an anonymous-pending-auth connection whose human was identified in-band);
+	/// <see langword="false"/> when <see cref="EffectiveUser"/> is still the upgrade-time
+	/// <see cref="User"/>.
+	/// </summary>
+	bool IsUserPromoted =>
+		this.Items.TryGetValue(AuthenticationContextKeys.PromotedPrincipal, out var promoted)
+			&& promoted is ClaimsPrincipal;
 
 	/// <summary>
 	/// UTC timestamp of upgrade.

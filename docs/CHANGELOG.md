@@ -12,6 +12,26 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`IInvocationConnection.EffectiveUser` + `IsUserPromoted`** (default interface members) — the
+  connection's *effective* principal: the Two-Phase Auth promoted principal when one has been stamped
+  into `Items` (under `AuthenticationContextKeys.PromotedPrincipal`), otherwise the upgrade-time
+  `User`. Establishes "who owns this connection *now*" as first-class contract surface instead of a
+  magic Items key every consumer had to know about — the per-invocation contexts, the connection
+  registry's subject lookup, the connection-terminator's session matching, and app lifecycle
+  hooks/diagnostics all read the same member. `User` stays immutable post-upgrade; promotion decorates
+  the connection through `Items`, and re-promotion overwrites, so `EffectiveUser` always reflects the
+  most recent promotion. Additive: existing implementers inherit the defaults.
+
+### Fixed
+
+- `IInvocationConnectionRegistry`'s docs placed the framework's connection-terminator in
+  `Cirreum.Runtime.Server` and named only two auth events; the terminator ships in
+  `Cirreum.Services.Server` (ADR-0027 Phase B) and also reacts to `UserAccountDisabled`. Also
+  documented that `FindBySubject` resolves subjects from `EffectiveUser`, so promoted connections
+  match under their promoted identity.
+
 ## [1.2.1] - 2026-07-05
 
 ### Updated
