@@ -12,6 +12,18 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-07-05
+
+### Fixed
+
+- Documented `IConnectionLifecycle`'s live-state-vs-cleanup division: `OnConnectedAsync`/
+  `OnDisconnectedAsync` bracket the connection's *live* state, so `OnDisconnectedAsync` fires only for a
+  connection that actually went live — a rejected or faulted establishment never receives it (its
+  `DisconnectInfo` would be meaningless). Cleanup that must survive rejection/fault binds to
+  `IInvocationConnection.Aborted` instead, which cancels on every teardown path. No behavioral change —
+  this makes the existing, intended contract explicit (the framework's connection registry already
+  follows it).
+
 ## [1.4.0] - 2026-07-05
 
 ### Added
