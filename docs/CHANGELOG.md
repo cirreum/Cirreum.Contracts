@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-05
+
 ### Added
 
 - **`IInvocationConnection.EffectiveUser` + `IsUserPromoted`** (default interface members) — the
