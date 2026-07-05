@@ -12,6 +12,27 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`PromotedUser`** (`ClaimsPrincipal?`) joins the connection-ownership surface — the nullable
+  primitive behind `EffectiveUser`/`IsUserPromoted`, for consumers that need the promoted identity
+  *as distinct from* the upgrade-time `User` (audit trails and diagnostics reporting both identities
+  of a promoted connection). Fully replaces `TwoPhaseAuth.GetPromotedPrincipal`.
+
+### Changed
+
+- **`EffectiveUser` + `IsUserPromoted` are now extension members** (`InvocationConnectionExtensions`,
+  C# 14 extension syntax), replacing the default interface members shipped in `1.3.0` hours earlier.
+  Same call-site syntax (`connection.EffectiveUser`) and identical semantics, but without the two DIM
+  quirks: the members are visible on concrete implementing types without an interface cast (DIMs never
+  join the class's surface), and test doubles get the real logic for free (dynamic-proxy mocks override
+  DIMs, silently bypassing the default body). Nothing of value was lost — per-implementation override
+  of connection-ownership resolution was a liability, not a feature: every transport must answer "who
+  owns this connection" identically.
+
+> Technically breaking against `1.3.0`'s interface surface (the two DIMs are removed), shipped hours
+> after `1.3.0` with zero consumers of the DIM form.
+
 ## [1.3.0] - 2026-07-05
 
 ### Added

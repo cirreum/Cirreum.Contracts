@@ -41,8 +41,8 @@ public interface IInvocationConnectionRegistry {
 	/// safe to enumerate concurrently with registrations/unregistrations.
 	/// </summary>
 	/// <remarks>
-	/// Implementations resolve each connection's subject from its
-	/// <see cref="IInvocationConnection.EffectiveUser"/>, so a connection promoted
+	/// Implementations resolve each connection's subject from its <c>EffectiveUser</c>
+	/// (see <see cref="InvocationConnectionExtensions"/>), so a connection promoted
 	/// mid-flight via Two-Phase Auth matches under its promoted identity.
 	/// </remarks>
 	IEnumerable<IInvocationConnection> FindBySubject(string subject);
