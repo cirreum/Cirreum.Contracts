@@ -50,7 +50,6 @@ public sealed record OperationContext<TOperation>(
 	/// <c>tid</c> claim (or provider-equivalent) via <c>UserState.Profile.Organization.OrganizationId</c>.
 	/// </summary>
 	public string? TenantId => this.UserState.Profile.Organization.OrganizationId;
-	public IdentityProviderType Provider => this.UserState.Provider;
 	public AuthenticationBoundary AuthenticationBoundary => this.UserState.AuthenticationBoundary;
 	public bool IsAuthenticated => this.UserState.IsAuthenticated;
 	public UserProfile Profile => this.UserState.Profile;
@@ -61,7 +60,6 @@ public sealed record OperationContext<TOperation>(
 
 	// Helper methods
 	public bool HasActiveTenant() => !string.IsNullOrWhiteSpace(this.TenantId);
-	public bool IsFromProvider(IdentityProviderType provider) => this.Provider == provider;
 	public bool IsInDepartment(string department) =>
 		!string.IsNullOrWhiteSpace(this.Profile.Department) &&
 		string.Equals(this.Profile.Department, department, StringComparison.OrdinalIgnoreCase);

@@ -1,4 +1,7 @@
 ﻿namespace Cirreum.State;
+
+using Cirreum;
+
 /// <summary>
 /// Builder interface for registering state sections with the dependency injection container.
 /// </summary>

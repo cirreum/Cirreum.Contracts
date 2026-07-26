@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Defines the severity of an <see cref="ActivityError"/>.
 /// </summary>

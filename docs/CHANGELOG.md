@@ -12,6 +12,58 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Changed
+
+- **Feature state contracts move from the `Cirreum.State` namespace to the root `Cirreum`
+  namespace.** `IActivityState`, `INotificationState`, `IThemeState`, `IInitializable`,
+  `IInitializableRemoteState`, `IInitializationOrchestrator`, `Notification`, `NotificationType`,
+  `ActivityError`, `ActivityErrorSeverity`, and `ActivityMode` are all affected.
+
+  `Cirreum.State` had accumulated two unrelated populations: the state *machinery* an application
+  builds on — `IRemoteState`, `IStateBuilder`, `IScopedNotificationState` — and the concrete
+  *feature* states it consumes. The second group is what applications reference constantly, and
+  putting it behind a namespace import made the common case the inconvenient one. `Cirreum.State`
+  now holds the machinery only.
+
+- **`IPageState` → `IBrowserDocumentState`.** The type governs the browser document hosting the
+  application — its title, application name, and progressive-web-app display mode — none of which
+  are properties of a Blazor *page*. The old name invited exactly that confusion in a framework
+  where "page" already means a routable component.
+
+- **`IPublisher.PublishAsync` is constrained to `IDomainEvent`** instead of `INotification`,
+  following the rename in `Cirreum.Kernel` 2.0.0. The type parameter is `TDomainEvent` and the
+  first argument is `domainEvent`; the constraint and the argument type are the only source-level
+  changes, and dispatch semantics are unchanged.
+
+  Cirreum used "notification" for two unrelated things — Conductor's in-application
+  publish/subscribe primitives, and the human-facing state family a client binds to in order to
+  show a person something. **`INotificationState` and `IScopedNotificationState` keep their
+  names**: they are the human-facing concept, and preserving that separation is the point of the
+  rename.
+
+### Removed
+
+- **`OperationContext.Provider` / `.IsFromProvider(IdentityProviderType)` and
+  `AuthorizationContext.Provider` / `.IsFromProvider(IdentityProviderType)`**, following the
+  removal of `IdentityProviderType` from `Cirreum.Kernel`.
+
+  Both were pass-throughs to `UserState.Provider`, a value inferred per request by matching the
+  `iss` claim against a built-in table of vendor domains — configuration re-derived by guesswork.
+  Neither had a call site in the framework, and `IsFromProvider` had none in any consuming
+  application either.
+
+  `AuthorizationContext` exposing it was the sharper problem: it invited an authorizer to gate
+  access on a best-effort string match that returns `Unknown` for a valid token whose provider
+  uses a custom domain. The authoritative per-request answer to "which identity provider
+  authenticated this caller" is the authenticated scheme, which is configuration-tied rather than
+  inferred and is what every other per-scheme lookup in the framework already dispatches on.
+
+  **Migration.** For "is this user authenticated?", use `IsAuthenticated` — the check that was
+  meant. For "which provider issued this token?", read `UserProfile.Issuer`, which carries the
+  `iss` claim verbatim. For a capability that happens to correlate with a provider, prefer the
+  capability signal itself; it survives adding a second identity provider where a provider check
+  does not. See `MIGRATION-v2.md`.
+
 ## [1.4.5] - 2026-07-24
 
 ### Updated

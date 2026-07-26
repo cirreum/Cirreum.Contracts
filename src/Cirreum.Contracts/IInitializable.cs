@@ -1,4 +1,4 @@
-﻿namespace Cirreum.State;
+﻿namespace Cirreum;
 
 using Cirreum.Security;
 

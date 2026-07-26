@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Represents an error that occurred during tracked application activity.
 /// </summary>

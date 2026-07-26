@@ -1,4 +1,6 @@
-﻿namespace Cirreum.State;
+﻿namespace Cirreum;
+
+using Cirreum.State;
 
 /// <summary>
 /// Represents application-wide activity and progress state used to coordinate

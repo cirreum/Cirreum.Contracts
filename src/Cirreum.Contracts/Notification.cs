@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Represents an in-app notification with optional action support.
 /// </summary>

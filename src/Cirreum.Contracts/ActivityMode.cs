@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Defines how application activity should be interpreted by consumers.
 /// </summary>

@@ -1,4 +1,6 @@
-﻿namespace Cirreum.State;
+﻿namespace Cirreum;
+
+using Cirreum.State;
 
 /// <summary>
 /// Defines a remote state object that participates in application startup initialization.

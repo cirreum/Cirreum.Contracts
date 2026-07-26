@@ -1,4 +1,6 @@
-﻿namespace Cirreum.State;
+﻿namespace Cirreum;
+
+using Cirreum.State;
 
 /// <summary>
 /// Defines the full notification state contract, extending scoped access with

@@ -72,11 +72,6 @@ public record AuthorizationContext(
 	public string? TenantId => this.UserState.Profile.Organization.OrganizationId;
 
 	/// <summary>
-	/// Gets the identity provider associated with the current user state.
-	/// </summary>
-	public IdentityProviderType Provider => this.UserState.Provider;
-
-	/// <summary>
 	/// Gets the authentication scope (Global, Tenant, or None) for the current caller.
 	/// </summary>
 	public AuthenticationBoundary AuthenticationBoundary => this.UserState.AuthenticationBoundary;
@@ -114,13 +109,6 @@ public record AuthorizationContext(
 	/// </summary>
 	/// <returns>true if a non-empty tenant identifier is present; otherwise, false.</returns>
 	public bool HasActiveTenant() => !string.IsNullOrWhiteSpace(this.TenantId);
-
-	/// <summary>
-	/// Determines whether the identity is associated with the specified identity provider.
-	/// </summary>
-	/// <param name="provider">The identity provider to compare with the current identity's provider.</param>
-	/// <returns>true if the identity is from the specified provider; otherwise, false.</returns>
-	public bool IsFromProvider(IdentityProviderType provider) => this.Provider == provider;
 
 	/// <summary>
 	/// Determines whether the user belongs to the specified department.

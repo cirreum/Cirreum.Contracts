@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Orchestrates application initialization, coordinating all registered
 /// <see cref="IInitializable"/> services and reporting progress through

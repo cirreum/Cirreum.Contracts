@@ -1,5 +1,7 @@
 ﻿namespace Cirreum.State;
 
+using Cirreum;
+
 /// <summary>
 /// Defines the core contract for a remote state object that manages in-memory domain data
 /// fetched from backend services.

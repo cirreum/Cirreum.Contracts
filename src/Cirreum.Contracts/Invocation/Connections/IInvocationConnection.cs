@@ -1,6 +1,5 @@
 namespace Cirreum.Invocation.Connections;
 
-using Cirreum.Authentication;
 using System.Security.Claims;
 
 /// <summary>

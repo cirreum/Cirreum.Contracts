@@ -1,5 +1,4 @@
-﻿namespace Cirreum.State;
-
+﻿namespace Cirreum;
 /// <summary>
 /// Defines the severity and visual category of a <see cref="Notification"/>.
 /// </summary>
