@@ -1,26 +1,26 @@
 ﻿namespace Cirreum.Conductor;
 
 /// <summary>
-/// Unified interface for dispatching requests and publishing notifications.
+/// Unified interface for dispatching operations and publishing domain events.
 /// Combines <see cref="IDispatcher"/> and <see cref="IPublisher"/> for convenience.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this interface in Minimal API endpoints and services that need both request dispatching 
-/// and notification publishing. For services that only need one or the other, prefer the specific 
+/// Use this interface in Minimal API endpoints and services that need both operation dispatching 
+/// and event publishing. For services that only need one or the other, prefer the specific 
 /// interfaces (<see cref="IDispatcher"/> or <see cref="IPublisher"/>) to follow the Interface 
 /// Segregation Principle.
 /// </para>
 /// <para>
 /// This interface is particularly useful in Minimal API route handlers, endpoint filters, and 
-/// application services that coordinate both commands/queries (via requests) and events (via notifications).
+/// application services that coordinate both operations and domain events.
 /// </para>
 /// </remarks>
 /// <example>
 /// <code>
 /// // Minimal API endpoint using IConductor
 /// app.MapPost("/api/orders", async (PlaceOrderRequest request, IConductor conductor) => {
-///     // Dispatch command
+///     // Dispatch operation
 ///     var result = await conductor.DispatchAsync(new PlaceOrderCommand(request));
 ///     
 ///     if (result.IsSuccess) {
