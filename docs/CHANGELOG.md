@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-07-26
+
 ### Updated
 
 - Re-pinned `Cirreum.Kernel` `1.3.0` → `2.0.0`, which carries the renames and the removal this
