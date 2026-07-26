@@ -12,6 +12,11 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Updated
+
+- Re-pinned `Cirreum.Kernel` `1.3.0` → `2.0.0`, which carries the renames and the removal this
+  release follows.
+
 ### Changed
 
 - **Feature state contracts move from the `Cirreum.State` namespace to the root `Cirreum`
