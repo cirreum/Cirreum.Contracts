@@ -174,7 +174,7 @@ public static class AuthorizationTelemetry {
 	/// no listeners are attached — all downstream code null-checks the activity.
 	/// </summary>
 	public static Activity? StartActivity(string resourceType) {
-		var activity = ActivitySource.StartActivity("Authorize Resource");
+		var activity = ActivitySource.StartActivity("Authorize Resource", ActivityKind.Internal);
 		activity?.SetTag(ResourceTypeTag, resourceType);
 		return activity;
 	}

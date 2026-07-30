@@ -12,6 +12,26 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-07-30
+
+### Fixed
+
+- **Removed the orphaned internal `Authorization<,>` intercept** (`AuthorizationIntercept.cs`).
+  The type relocated to `Cirreum.Domain`, where the Conductor default pipeline actually registers
+  it. It had shipped here unreferenced since the 2.0.0 foundation split — internal, and invoked by
+  nothing on any composition path. See the paired `Cirreum.Domain` release for the fail-open
+  authorization regression this closes.
+- **`IOperationGrantProvider.ResolveHomeOwnerAsync` documentation now states the merge
+  semantics explicitly**: a non-null home owner is merged into the granted set with no permission
+  check, granting unconditional access on that owner for every operation that reaches grant
+  resolution. Returning `null` is the only way to withhold home access — revoking a grant record
+  does not revoke it. The behavior is unchanged; the contract now says what it does.
+- **`AuthorizationTelemetry.StartActivity` states `ActivityKind.Internal` explicitly** instead of
+  taking it as the silent default. `Internal` was already the correct (and effective) kind; the
+  choice is now recorded so it reads as deliberate. Mirrors the authentication track's
+  transformation-activity change in `Cirreum.Runtime.AuthenticationProvider` 2.0.0. No behavior
+  difference. (Folded in from the backlog.)
+
 ## [2.0.0] - 2026-07-26
 
 ### Updated

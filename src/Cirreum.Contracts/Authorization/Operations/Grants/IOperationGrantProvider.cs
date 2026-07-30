@@ -60,6 +60,23 @@ public interface IOperationGrantProvider {
 	/// grant-derived owner set. Return <see langword="null"/> to skip the home-owner merge
 	/// (e.g., for suspended users, revoked memberships, or strict grants-only policy).
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// <b>A non-null home owner grants unconditional access.</b> The returned owner is merged
+	/// into the granted set with no permission check — the caller gains access on that owner
+	/// for every operation that reaches grant resolution, regardless of what
+	/// <see cref="ResolveGrantsAsync"/> returned and regardless of the operation's declared
+	/// <see cref="RequiresGrantAttribute"/> permissions. A caller with zero grant records
+	/// still holds full home-owner access, which means deleting or revoking a grant record
+	/// for the caller's home owner does NOT revoke access.
+	/// </para>
+	/// <para>
+	/// This method is the only enforcement point for home-owner policy. Apps that need
+	/// same-owner revocation, per-permission home access, or suspension semantics must
+	/// implement that policy here and return <see langword="null"/> when home access should
+	/// be withheld.
+	/// </para>
+	/// </remarks>
 	ValueTask<string?> ResolveHomeOwnerAsync<TAuthorizableObject>(
 		AuthorizationContext<TAuthorizableObject> context,
 		CancellationToken cancellationToken)
