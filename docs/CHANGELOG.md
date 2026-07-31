@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-07-31
+
 ### Breaking
 
 - **`IOperationGrantProvider.ResolveHomeOwnerAsync` removed.** Home-company membership access is
