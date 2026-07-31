@@ -1,8 +1,8 @@
 namespace Cirreum.Authorization.Operations.Grants;
 
 /// <summary>
-/// The computed set of owners a caller can touch for a specific operation, after combining
-/// their home ownership, grants, and the operation's required permissions.
+/// The computed set of owners a caller can touch for a specific operation, derived from
+/// their grant records and the operation's required permissions.
 /// </summary>
 /// <remarks>
 /// <para>

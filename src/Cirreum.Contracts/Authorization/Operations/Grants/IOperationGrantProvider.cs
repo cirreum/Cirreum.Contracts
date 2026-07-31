@@ -8,10 +8,9 @@ namespace Cirreum.Authorization.Operations.Grants;
 /// <remarks>
 /// <para>
 /// This is the only Grants interface the app writes code against. It has one required
-/// method (<see cref="ResolveGrantsAsync"/>) and two optional hooks (<see cref="ShouldBypassAsync"/>,
-/// <see cref="ResolveHomeOwnerAsync"/>). The app does not touch <see cref="OperationGrant"/> —
-/// the framework's grant-factory orchestrator does all
-/// translation policy (denied/unrestricted semantics, home-owner merge, empty-set collapse).
+/// method (<see cref="ResolveGrantsAsync"/>) and one optional hook (<see cref="ShouldBypassAsync"/>).
+/// The app does not touch <see cref="OperationGrant"/> — the framework's grant-factory
+/// orchestrator does all translation policy (denied/unrestricted semantics, empty-set collapse).
 /// </para>
 /// <para>
 /// Register with <c>services.AddOperationGrants&lt;TResolver&gt;()</c>. The framework wires
@@ -27,7 +26,10 @@ public interface IOperationGrantProvider {
 	/// <remarks>
 	/// <para>
 	/// An empty owner list means the caller has no qualifying grants. The orchestrator
-	/// translates an empty combined set (grants + home owner) to <see cref="OperationGrant.Denied"/>.
+	/// translates an empty owner set to <see cref="OperationGrant.Denied"/>. Grant records
+	/// are the only source of owner-scoped access — including the caller's home owner:
+	/// membership access is expressed as a grant record (e.g., a company-self-grant row),
+	/// never inferred from the caller's identity.
 	/// </para>
 	/// <para>
 	/// Do not encode role-to-permission rules here — those belong in resource authorizers
@@ -53,33 +55,4 @@ public interface IOperationGrantProvider {
 		CancellationToken cancellationToken)
 		where TAuthorizableObject : IAuthorizableObject
 		=> new(false);
-
-	/// <summary>
-	/// Optional home-owner policy. Default implementation returns
-	/// <c>(ApplicationUser as IOwnedApplicationUser)?.OwnerId</c>, which is merged into the
-	/// grant-derived owner set. Return <see langword="null"/> to skip the home-owner merge
-	/// (e.g., for suspended users, revoked memberships, or strict grants-only policy).
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// <b>A non-null home owner grants unconditional access.</b> The returned owner is merged
-	/// into the granted set with no permission check — the caller gains access on that owner
-	/// for every operation that reaches grant resolution, regardless of what
-	/// <see cref="ResolveGrantsAsync"/> returned and regardless of the operation's declared
-	/// <see cref="RequiresGrantAttribute"/> permissions. A caller with zero grant records
-	/// still holds full home-owner access, which means deleting or revoking a grant record
-	/// for the caller's home owner does NOT revoke access.
-	/// </para>
-	/// <para>
-	/// This method is the only enforcement point for home-owner policy. Apps that need
-	/// same-owner revocation, per-permission home access, or suspension semantics must
-	/// implement that policy here and return <see langword="null"/> when home access should
-	/// be withheld.
-	/// </para>
-	/// </remarks>
-	ValueTask<string?> ResolveHomeOwnerAsync<TAuthorizableObject>(
-		AuthorizationContext<TAuthorizableObject> context,
-		CancellationToken cancellationToken)
-		where TAuthorizableObject : IAuthorizableObject
-		=> new((context.UserState.ApplicationUser as IOwnedApplicationUser)?.OwnerId);
 }

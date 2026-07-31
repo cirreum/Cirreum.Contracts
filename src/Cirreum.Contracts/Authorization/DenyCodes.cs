@@ -43,12 +43,12 @@ public static class DenyCodes {
 	/// <summary>
 	/// The requested owner is not in the caller's reach for this operation.
 	/// Emitted when a command's <c>OwnerId</c> or a list's <c>OwnerIds</c> contains an
-	/// owner the caller has no grant (or home ownership) for.
+	/// owner the caller has no grant for.
 	/// </summary>
 	public const string OwnerNotInReach = "OWNER_NOT_IN_REACH";
 
 	/// <summary>
-	/// The caller's granted access is empty for this operation (no grants, no home owner).
+	/// The caller's granted access is empty for this operation (no qualifying grant records).
 	/// Emitted when a command or list cannot be stamped/enriched because the caller has
 	/// no granted access.
 	/// </summary>

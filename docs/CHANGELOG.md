@@ -12,6 +12,26 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Breaking
+
+- **`IOperationGrantProvider.ResolveHomeOwnerAsync` removed.** Home-company membership access is
+  now expressed as a grant record (e.g., a company-self-grant row) like every other owner-scoped
+  access — the framework no longer merges an implicit, permission-blind, revoke-blind home owner
+  into the granted set. Grant records are the only source of owner-scoped access. ⚠️ **Apps must
+  seed home grant rows BEFORE upgrading or tenant users fail closed** — see `MIGRATION-v4.md`
+  for the deploy-order walkthrough. Paired with `Cirreum.Domain` 4.0.0, which removes the merge
+  from the grant-factory orchestrator.
+
+### Added
+
+- **`PermissionSet.IsSatisfiedBy`** — the canonical grant-entry matcher: AND semantics across
+  the required set, case-insensitive exact `feature:operation` matching, bare-action shorthand
+  (`"read"` matching any feature) as an explicit opt-in flag, blank/malformed entries never
+  match. Replaces the hand-rolled per-app `Satisfies`/`MatchesPermission` helpers whose case and
+  wildcard semantics silently drifted. String and parsed-`Permission` overloads.
+- **First test suite** (`tests/Cirreum.Contracts.Tests`): 26 tests covering the matcher's exact,
+  shorthand, case-variance, and blank/malformed paths.
+
 ## [3.0.0] - 2026-07-30
 
 ### Breaking
