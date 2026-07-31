@@ -14,7 +14,7 @@ using System.Reflection;
 /// <para>
 /// The cache is consulted by the authorization pipeline setup to hoist required grant permissions
 /// onto <see cref="AuthorizationContext{TAuthorizableObject}.RequiredGrants"/>. Stage 1 (the
-/// grant gate) enforces them; Stage 2 resource authorizers and Stage 3 policy validators may
+/// grant gate) enforces them; Stage 2 resource authorizers and Stage 3 policy authorizers may
 /// inspect the same set as read-only context.
 /// </para>
 /// <para>
@@ -87,7 +87,7 @@ public static class RequiredGrantCache {
 							$"'{permission.Feature}' which does not match the domain feature " +
 							$"'{domainFeature}'. All grant requirements on a granted " +
 							$"resource must use the domain's feature. Cross-cutting concerns " +
-							$"belong in Stage 2 resource authorizers or Stage 3 policy validators.");
+							$"belong in Stage 2 resource authorizers or Stage 3 policy authorizers.");
 					}
 				}
 

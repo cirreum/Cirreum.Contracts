@@ -12,6 +12,28 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-07-30
+
+### Breaking
+
+- **`AuthorizationTelemetry.StepPolicyValidator` → `StepPolicyAuthorizer`**, and its emitted wire
+  value `policy-validator` → `policy-authorizer`. Part of the framework-wide "policy authorizer"
+  vocabulary correction (paired with `Cirreum.Domain` 3.0.0's `IPolicyValidator` →
+  `IPolicyAuthorizer` rename): the Stage 3 extension point performs authorization, not
+  FluentValidation property validation, and the telemetry now says so. Dashboards and alerts
+  filtering on the step value need updating; `StagePolicy` (`"policy"`) is unchanged. See
+  `MIGRATION-v3.md`.
+
+### Fixed
+
+- **`IResourceAccessEvaluator` documents its authorization-pipeline dependency**: the evaluator
+  reads the caller from the context the operation-authorization pipeline populates, and calling it
+  outside an authorized invocation (background services, queue consumers, startup jobs — including
+  through surfaces built on it such as protected repositories) throws rather than evaluating
+  against a missing caller. Behavior unchanged; the contract now states it.
+- Stage 3 documentation language across the authorization contracts now reads "policy
+  authorizers" (was "policy validators").
+
 ## [2.0.1] - 2026-07-30
 
 ### Fixed

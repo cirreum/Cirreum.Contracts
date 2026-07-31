@@ -22,6 +22,14 @@ namespace Cirreum.Authorization.Resources;
 ///     <b>Filter</b> — batch filtering, returns only authorized resources (queries, listings).
 ///   </description></item>
 /// </list>
+/// <para>
+/// <b>Requires an authorized invocation.</b> The evaluator reads the caller's resolved identity
+/// and effective roles from the authorization context that the operation-authorization pipeline
+/// populates before the handler runs. Calling it outside that flow — a background service, queue
+/// consumer, startup initializer, or any dispatch that never ran operation authorization — throws
+/// <see cref="InvalidOperationException"/> rather than evaluating against a missing caller. The
+/// same applies to any surface built on this service (e.g. protected repositories).
+/// </para>
 /// </remarks>
 public interface IResourceAccessEvaluator {
 

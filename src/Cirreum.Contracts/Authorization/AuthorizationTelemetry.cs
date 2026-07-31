@@ -28,7 +28,7 @@ public static class AuthorizationTelemetry {
 	/// <summary>Stage 2 — object authorizers (<see cref="IAuthorizer{TAuthorizableObject}"/>).</summary>
 	public const string StageResource = "resource";
 
-	/// <summary>Stage 3 — policy validators.</summary>
+	/// <summary>Stage 3 — policy authorizers.</summary>
 	public const string StagePolicy = "policy";
 
 	/// <summary>Stage — resource access evaluation (<see cref="Resources.IResourceAccessEvaluator"/>).</summary>
@@ -48,8 +48,8 @@ public static class AuthorizationTelemetry {
 	/// <summary>Stage 2 — object authorizer.</summary>
 	public const string StepResourceAuthorizer = "resource-authorizer";
 
-	/// <summary>Stage 3 — policy validator.</summary>
-	public const string StepPolicyValidator = "policy-validator";
+	/// <summary>Stage 3 — policy authorizer.</summary>
+	public const string StepPolicyAuthorizer = "policy-authorizer";
 
 	/// <summary>Resource access check.</summary>
 	public const string StepResourceAccessCheck = "resource-access-check";
