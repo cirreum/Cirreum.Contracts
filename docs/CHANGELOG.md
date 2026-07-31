@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.0.1] - 2026-07-31
+
 ### Updated
 
 - Re-pinned `Cirreum.Kernel` `2.0.0` → `2.0.1` (documentation-only upstream patch:
