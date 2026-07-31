@@ -12,6 +12,12 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Updated
+
+- Re-pinned `Cirreum.Kernel` `2.0.0` → `2.0.1` (documentation-only upstream patch:
+  `IOwnedApplicationUser.OwnerId` is an identity fact, not an access fact — the doc half of
+  this major's records-only grant semantics).
+
 ## [4.0.0] - 2026-07-31
 
 ### Breaking
