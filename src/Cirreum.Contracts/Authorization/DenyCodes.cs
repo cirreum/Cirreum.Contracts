@@ -8,14 +8,30 @@ namespace Cirreum.Authorization;
 public static class DenyCodes {
 
 	/// <summary>
-	/// Caller is not authenticated.
+	/// Caller is not authenticated. Emitted by the preflight authentication gate.
 	/// </summary>
 	public const string AuthenticationRequired = "AUTHENTICATION_REQUIRED";
 
 	/// <summary>
-	/// Caller's application user is disabled.
+	/// Caller's application user is disabled. Emitted by the preflight application-user gate
+	/// when a resolved application user reports <see cref="IApplicationUser.IsEnabled"/> of
+	/// <see langword="false"/>. Callers with no application-user record are not subject to it.
 	/// </summary>
 	public const string UserDisabled = "USER_DISABLED";
+
+	/// <summary>
+	/// Caller holds no roles registered with the application's role registry.
+	/// Emitted by the preflight role gate.
+	/// </summary>
+	public const string NoRolesAssigned = "NO_ROLES_ASSIGNED";
+
+	/// <summary>
+	/// The authorizable object has no authorizer, grant surface, constraint, or applicable
+	/// policy — nothing would evaluate it. Emitted by the preflight authorizer-presence gate,
+	/// which denies fail-closed rather than admitting an unguarded operation. A
+	/// misconfiguration rather than an access decision.
+	/// </summary>
+	public const string NoAuthorizersRegistered = "NO_AUTHORIZERS_REGISTERED";
 
 	/// <summary>
 	/// OwnerId is required on the resource but was not supplied. Emitted on Global-scope
@@ -87,4 +103,17 @@ public static class DenyCodes {
 	/// <see cref="Resources.IAccessEntryProvider{T}.GetByIdAsync"/> returns <see langword="null"/>.
 	/// </summary>
 	public const string ResourceNotFound = "RESOURCE_NOT_FOUND";
+
+	/// <summary>
+	/// An unexpected exception was thrown while evaluating authorization. The pipeline denies
+	/// rather than admitting a caller whose evaluation did not complete.
+	/// </summary>
+	public const string EvaluationError = "EVALUATION_ERROR";
+
+	/// <summary>
+	/// A denial whose evaluator supplied no code. Emitted when a constraint, object authorizer,
+	/// or policy authorizer returns a failure with no <c>ErrorCode</c> set — the reason is
+	/// unknown to the pipeline, not absent.
+	/// </summary>
+	public const string Unknown = "UNKNOWN";
 }

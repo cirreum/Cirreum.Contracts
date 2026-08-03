@@ -12,6 +12,36 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`AuthorizationTelemetry.StagePreflight`** — a stage for the checks that run before Stage 1
+  evaluates the authorizable object, joining `scope` / `resource` / `policy`. With it, four
+  steps: `StepAuthentication`, `StepApplicationUser`, `StepRoles`, `StepAuthorizerPresence`.
+  These denials previously reported no stage and never reached `cirreum.authz.decisions`.
+- **`DenyCodes.NoRolesAssigned`, `NoAuthorizersRegistered`, `EvaluationError`, and `Unknown`** —
+  codes for the denials that had none, retiring the last inline reason strings in the pipeline.
+- **The pipeline's telemetry rules are documented on `AuthorizationTelemetry`**: every denial
+  records a decision with stage, step, and a `DenyCodes` reason; every terminal outcome records
+  duration with decision and reason; a pass records a decision only where a stage actually
+  evaluated the object; no reason is ever an inline string.
+
+### Changed
+
+- **`DenyCodes.AuthenticationRequired` is now emitted.** It was declared but unused — the
+  unauthenticated path reported the literal `"unauthenticated"` instead. ⚠️ Alongside it,
+  `"no-roles"`, `"no-authorizers"`, and `"error"` become `NO_ROLES_ASSIGNED`,
+  `NO_AUTHORIZERS_REGISTERED`, and `EVALUATION_ERROR`. **Queries and alerts matching the old
+  lowercase reason values will go quiet**, not wrong — they match nothing rather than matching
+  the wrong thing.
+- `DenyCodes.UserDisabled`'s documentation now states what the code does and does not cover:
+  it is emitted for a resolved application user reporting `IsEnabled = false`, and callers with
+  no application-user record are not subject to it.
+
+### Updated
+
+- Re-pinned `Cirreum.Kernel` `2.0.1` → `2.0.2` (documentation-only patch rewriting
+  `IOwnedApplicationUser` around what `OwnerId` is for).
+
 ## [4.0.1] - 2026-07-31
 
 ### Updated

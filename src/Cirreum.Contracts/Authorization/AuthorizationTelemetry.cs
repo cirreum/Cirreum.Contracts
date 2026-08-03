@@ -17,10 +17,31 @@ using System.Runtime.CompilerServices;
 /// <see cref="RecordDecision"/> to increment the decision counter with a
 /// consistent set of dimensions.
 /// </para>
+/// <para>
+/// The pipeline holds to four rules, so a reason is never a literal and a denial is never
+/// invisible:
+/// </para>
+/// <list type="bullet">
+///   <item><description>Every denial calls <see cref="RecordDecision"/> with a stage, a step,
+///   and a <see cref="DenyCodes"/> reason.</description></item>
+///   <item><description>Every terminal outcome calls <see cref="RecordDuration"/> with its
+///   decision and reason.</description></item>
+///   <item><description>A pass calls <see cref="RecordDecision"/> only where a stage actually
+///   evaluated the object. A whole-pipeline pass is not a stage decision; it is visible on the
+///   duration histogram, which carries <see cref="DecisionTag"/>.</description></item>
+///   <item><description>Reasons come from <see cref="DenyCodes"/> or
+///   <see cref="ReasonPass"/> — never an inline string.</description></item>
+/// </list>
 /// </remarks>
 public static class AuthorizationTelemetry {
 
 	// Stage names ——————————————————————————————————————————————
+
+	/// <summary>
+	/// Stage 0 — preflight gates that run before any stage evaluates the authorizable object:
+	/// authentication, application-user enablement, registered roles, and authorizer presence.
+	/// </summary>
+	public const string StagePreflight = "preflight";
 
 	/// <summary>Stage 1 — scope evaluation (owner-scope gate + authorization constraints).</summary>
 	public const string StageScope = "scope";
@@ -35,6 +56,18 @@ public static class AuthorizationTelemetry {
 	public const string StageResourceAccess = "resource-access";
 
 	// Step names ———————————————————————————————————————————————
+
+	/// <summary>Stage 0 — the caller is authenticated.</summary>
+	public const string StepAuthentication = "authentication";
+
+	/// <summary>Stage 0 — the caller's application user, if any, is not disabled.</summary>
+	public const string StepApplicationUser = "application-user";
+
+	/// <summary>Stage 0 — the caller holds at least one registered role.</summary>
+	public const string StepRoles = "roles";
+
+	/// <summary>Stage 0 — something is registered that will actually evaluate the object.</summary>
+	public const string StepAuthorizerPresence = "authorizer-presence";
 
 	/// <summary>Stage 1, Step 0 — owner-scope gate.</summary>
 	public const string StepOwnerScope = "owner-scope";
@@ -250,7 +283,7 @@ public static class AuthorizationTelemetry {
 	/// <summary>
 	/// Records an authorization decision to the shared decisions counter.
 	/// </summary>
-	/// <param name="stage">Stage name — use <see cref="StageScope"/> / <see cref="StageResource"/> / <see cref="StagePolicy"/>.</param>
+	/// <param name="stage">Stage name — use <see cref="StagePreflight"/> / <see cref="StageScope"/> / <see cref="StageResource"/> / <see cref="StagePolicy"/>.</param>
 	/// <param name="step">Step name within the stage (e.g. <see cref="StepOwnerScope"/>).</param>
 	/// <param name="decision"><see cref="DecisionPass"/> or <see cref="DecisionDeny"/>.</param>
 	/// <param name="reason">Machine-readable reason — a <see cref="DenyCodes"/> value for denies, <see cref="ReasonPass"/> for passes.</param>
