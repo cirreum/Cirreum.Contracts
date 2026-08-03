@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-08-03
+
 ### Added
 
 - **`AuthorizationTelemetry.StagePreflight`** — a stage for the checks that run before Stage 1
