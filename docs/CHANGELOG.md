@@ -12,6 +12,19 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-08-04
+
+### Changed
+
+- **Removed the dormant `AuthorizationDenial` record.** It was never referenced by any package —
+  framework or consumer — and the `DenyCodes` summary's claim that codes are emitted "in
+  `AuthorizationDenial.Code`" was never true (codes reach telemetry only). `Cirreum.Exceptions`
+  is the denial-path carrier and, being a lower layer, could never have referenced this type.
+  Deleted under the dormant-surface rule; shipped as a Minor deliberately — with zero consumers,
+  the removal cannot break a compile anywhere.
+- `DenyCodes`' summary now states where codes are actually emitted: telemetry
+  (`cirreum.authz.reason`).
+
 ## [4.1.0] - 2026-08-03
 
 ### Added

@@ -2,8 +2,7 @@ namespace Cirreum.Authorization;
 
 /// <summary>
 /// Stable machine-readable codes for authorization denials.
-/// Emitted on telemetry (<c>cirreum.authz.reason</c>) and in
-/// <see cref="AuthorizationDenial.Code"/>.
+/// Emitted on telemetry (<c>cirreum.authz.reason</c>).
 /// </summary>
 public static class DenyCodes {
 
