@@ -12,6 +12,10 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Updated
+
+- Updated NuGet packages.
+
 ## [4.2.0] - 2026-08-04
 
 ### Changed
