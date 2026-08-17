@@ -17,10 +17,17 @@ public static class InvocationContextExtensions {
 		/// dispatch.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// Reads the scheme stamp from <see cref="IInvocationContext.Items"/> — stamped by
-		/// the dynamic forward selector for HTTP invocations, and seeded from the
-		/// connection's authentication slots for long-lived sources. Describes how the
-		/// invocation's transport was authenticated, not how its subject was established.
+		/// the dynamic forward selector for HTTP invocations, and seeded from the connection's
+		/// authentication slots for long-lived sources.
+		/// </para>
+		///<para>
+		/// For long-lived sources, this value describes how the connection was authenticated
+		/// at establishment. It does not change when the connection is later promoted through
+		/// Two-Phase Auth and therefore does not necessarily describe how
+		/// <see cref="IInvocationContext.User"/> was established.
+		///</para>
 		/// </remarks>
 		public string? AuthenticatedScheme =>
 			invocation.Items.TryGetValue(AuthenticationContextKeys.AuthenticatedScheme, out var scheme)

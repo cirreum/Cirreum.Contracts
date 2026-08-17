@@ -23,11 +23,15 @@ using System.Security.Claims;
 /// </remarks>
 public interface IInvocationContext {
 
-	/// <summary>The authenticated principal for this invocation.</summary>
+	/// <summary>
+	/// The effective principal for this invocation.
+	/// </summary>
 	/// <remarks>
 	/// Immutable for the invocation's lifetime. For invocations from long-lived sources,
-	/// mirrors <see cref="IInvocationConnection.User"/> (set once at upgrade). For stateless sources,
-	/// derived from the inbound request's authenticated principal.
+	/// snapshots the connection's <c>EffectiveUser</c> when the invocation is created.
+	/// A connection promoted during the current invocation therefore exposes the promoted
+	/// identity beginning with the next invocation. For stateless sources, derived from
+	/// the inbound request's authenticated principal.
 	/// </remarks>
 	ClaimsPrincipal User { get; }
 
