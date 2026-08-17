@@ -1,49 +1,66 @@
 namespace Cirreum.Invocation;
 
 /// <summary>
-/// Typed annotation describing where a server-side request originated. Replaces the
-/// deprecated <c>IActorContext</c> surface with a server-only,
-/// transport-aware origin model.
+/// Describes the origin of a server-side invocation for audit, telemetry, and
+/// origin-aware policy decisions.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Surfaced on the framework's <c>IUserState.Origin</c> property by the server-side
-/// <c>UserStateAccessor</c> at <see cref="IInvocationContext"/> materialization. Used for
-/// audit, telemetry, and origin-aware authorization where the *transport channel* itself
-/// is part of the access policy (e.g., "this operation only over WebSocket promoted with
-/// Two-Phase Auth", "this operation only via direct HTTP from operator IdP").
+/// Materialized by the server-side <c>UserStateAccessor</c> and surfaced through
+/// <c>IUserState.Origin</c>. Captures both the application-defined channel and the
+/// framework invocation source so consumers can distinguish, for example, browser
+/// WebSocket traffic from machine-to-machine HTTP even when multiple channels share
+/// the same underlying source adapter.
 /// </para>
 /// <para>
-/// <b>Not security-load-bearing.</b> Origin is a diagnostic + audit shape; authorization
-/// decisions still flow through grants + roles + permissions. Authorizers may *read* origin
-/// for policy gating but should not treat the channel alone as proof of identity.
+/// Origin metadata is not proof of identity. Authorization continues to rely on the
+/// authenticated subject, grants, roles, permissions, and other applicable policy.
+/// Authorizers may use origin as an additional policy constraint, but should not treat
+/// <see cref="Channel"/> or <see cref="InvocationSource"/> alone as authentication
+/// evidence.
 /// </para>
 /// </remarks>
 public interface IRequestOrigin {
 
 	/// <summary>
-	/// The transport channel that delivered the request — a stable string identifier
-	/// from a small known set (e.g., <c>"Http"</c>, <c>"WebSocket"</c>, <c>"SignalR"</c>,
-	/// <c>"gRPC"</c>, <c>"Webhook"</c>, <c>"BackgroundTimer"</c>, <c>"QueueListener"</c>).
-	/// Distinct from <see cref="InvocationSource"/> in that Channel categorizes the
-	/// caller's perspective (browser-WS, M2M-HTTP, etc.) while InvocationSource names the
-	/// framework adapter that materialized the invocation.
+	/// Gets the application-defined channel through which the invocation originated.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Describes the caller-facing or application-level path, such as
+	/// <c>"WebChat"</c>, <c>"Twilio"</c>, <c>"PartnerWebhook"</c>, or
+	/// <c>"OperatorPortal"</c>.
+	/// </para>
+	/// <para>
+	/// This is distinct from <see cref="InvocationSource"/>, which identifies the
+	/// framework adapter that materialized the invocation (for example,
+	/// <see cref="InvocationSources.Http"/>, <see cref="InvocationSources.SignalR"/>,
+	/// or <see cref="InvocationSources.WebSocket"/>).
+	/// </para>
+	/// </remarks>
 	string Channel { get; }
 
 	/// <summary>
-	/// Optional caller-supplied correlation reference — request id, conversation id,
-	/// webhook event id, etc. Carried through telemetry and audit without interpretation
-	/// by the framework. <see langword="null"/> when no reference is provided.
+	/// Gets an optional application-defined correlation reference associated with the
+	/// invocation.
 	/// </summary>
+	/// <remarks>
+	/// May contain a conversation identifier, webhook event identifier, request
+	/// reference, or similar value. The framework carries the value for telemetry and
+	/// audit without interpreting it. <see langword="null"/> when no reference was
+	/// supplied.
+	/// </remarks>
 	string? Reference { get; }
 
 	/// <summary>
-	/// Denormalized <see cref="IInvocationContext.InvocationSource"/> at the time the
-	/// origin was captured — duplicated here so origin-aware consumers can reason about
-	/// the source without re-resolving the invocation context. Matches
-	/// <see cref="InvocationSources"/> values.
+	/// Gets the framework invocation source captured when this origin was materialized.
 	/// </summary>
+	/// <remarks>
+	/// Mirrors <see cref="IInvocationContext.InvocationSource"/> so consumers holding only
+	/// the origin can determine which framework adapter produced the invocation without
+	/// resolving the ambient invocation context. Framework-known values are defined by
+	/// <see cref="InvocationSources"/>.
+	/// </remarks>
 	string InvocationSource { get; }
 
 }
