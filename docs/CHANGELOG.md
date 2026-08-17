@@ -12,6 +12,17 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Changed
+
+- **`IRequestOrigin` is removed.** Defined at the foundation reset as the replacement for the
+  deleted `IUserState.Actor` surface and never implemented, produced, or consumed — its own docs
+  promised an `IUserState.Origin` that never existed and could not have compiled from Kernel.
+  Removing a public interface is breaking on paper; deliberately treated as non-breaking cleanup
+  (zero consumers verified framework-wide). Not deferred, rejected: each member already has a
+  better home — invocation source lives on `IInvocationContext`, application-defined channel
+  facts travel as principal claims, and correlation references belong to telemetry — and
+  "origin" now means the scheme that established a subject.
+
 ### Added
 
 - **`IInvocationContext.AuthenticatedScheme`** — extension member reading the invocation's
