@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-08-17
+
 ### Changed
 
 - **`IRequestOrigin` is removed.** Defined at the foundation reset as the replacement for the
