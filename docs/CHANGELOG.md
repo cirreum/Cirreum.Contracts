@@ -12,6 +12,16 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`IInvocationContext.AuthenticatedScheme`** — extension member reading the invocation's
+  scheme stamp, uniform across HTTP and long-lived sources (HTTP invocations surface
+  `HttpContext.Items` directly; connection invocations seed the slot from the connection's
+  authentication state). Replaces the raw
+  `Items[AuthenticationContextKeys.AuthenticatedScheme]` read at app call sites — session-ticket
+  negotiate endpoints and anywhere else the current scheme is needed. Describes how the
+  invocation's transport was authenticated, not how its subject was established.
+
 ## [4.2.2] - 2026-08-17
 
 ### Updated
