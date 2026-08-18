@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.4.0] - 2026-08-18
+
 ### Added
 
 - **`IInvocationContext.OriginScheme`** — extension member reading the origin-scheme stamp: the
