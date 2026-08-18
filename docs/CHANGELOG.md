@@ -12,6 +12,23 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **`IInvocationContext.OriginScheme`** — extension member reading the origin-scheme stamp: the
+  scheme that established the current subject when it differs from `AuthenticatedScheme` (a
+  session-ticket continuation or a Two-Phase Auth promotion), `null` when the authenticated
+  scheme established the subject itself. Reads the invocation's own items, like its siblings —
+  connection slots reach an invocation only through the per-invocation seed, so all subject
+  facts within one invocation come from the same snapshot: a promotion stamped mid-invocation
+  surfaces at the next invocation, together with the promoted identity it describes.
+- **`IInvocationContext.EffectiveScheme`** — `OriginScheme ?? AuthenticatedScheme`: the scheme
+  whose declarations govern the current subject. The read every authority-sensitive consumer
+  should use (subject-kind resolution, `IApplicationUserResolver` dispatch, boundary
+  resolution) in place of hand-rolled coalescing at each call site. Completes the scheme
+  triple mirroring the user triple: `AuthenticatedScheme` ↔ `User` (the transport fact),
+  `OriginScheme` ↔ `PromotedUser` (the override fact, absent when none), `EffectiveScheme` ↔
+  `EffectiveUser` (what consumers read).
+
 ## [4.3.0] - 2026-08-17
 
 ### Changed
