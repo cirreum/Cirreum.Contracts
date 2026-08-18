@@ -12,6 +12,23 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.5.0] - 2026-08-18
+
+### Added
+
+* **`UserPresenceMonitorOptions.MinimumRefreshInterval`** — exposes the framework's existing
+  5-second lower bound for enabled presence refreshes as public contract instead of leaving
+  consumers to repeat the `5_000` literal. `0` remains the explicit disabled state; positive
+  values through `MinimumRefreshInterval` are invalid, and enabled intervals must be greater
+  than the minimum. Higher-level presence registration APIs can now validate against the same
+  boundary enforced by the monitor.
+
+### Changed
+
+* **`UserPresenceMonitorOptions` documentation now states the refresh semantics explicitly**:
+  `DefaultRefreshInterval` remains one minute (`60_000` ms), `0` disables monitoring, and invalid
+  positive intervals fall back to the default. Runtime behavior is unchanged.
+
 ## [4.4.0] - 2026-08-18
 
 ### Added
