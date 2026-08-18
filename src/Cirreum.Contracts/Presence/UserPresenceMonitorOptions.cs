@@ -1,28 +1,41 @@
 ﻿namespace Cirreum.Presence;
 
 /// <summary>
-/// Configuration options for the user presence monitoring system.
+/// Configuration options for user presence monitoring.
 /// </summary>
 public class UserPresenceMonitorOptions {
 
 	/// <summary>
-	/// The default refresh interval value (1 minute).
+	/// The minimum enabled refresh interval, in milliseconds.
 	/// </summary>
+	/// <remarks>
+	/// Positive refresh intervals must be greater than this value. A value of
+	/// <c>0</c> is reserved for disabling presence monitoring.
+	/// </remarks>
+	public const int MinimumRefreshInterval = 5_000;
+
+	/// <summary>
+	/// The default refresh interval, in milliseconds.
+	/// </summary>
+	/// <remarks>
+	/// The default interval is one minute.
+	/// </remarks>
 	public const int DefaultRefreshInterval = 60_000;
 
 	/// <summary>
-	/// Gets or sets the interval in milliseconds between presence updates.
+	/// Gets or sets the interval, in milliseconds, between presence updates.
 	/// </summary>
-	/// <remarks>
-	/// This value determines how frequently the presence monitor will check and update the user's presence status.
-	/// A smaller interval provides more real-time presence information but increases server load.
-	/// A larger interval reduces server load but may result in less accurate presence information.
-	/// </remarks>
 	/// <value>
-	/// The refresh interval in milliseconds. Default value is <see cref="DefaultRefreshInterval"/>. A
-	/// value of 5 seconds or less is considered invalid, and will fall back to <see cref="DefaultRefreshInterval"/>.
-	/// A value of 0 (zero) will disable the monitor.
+	/// Defaults to <see cref="DefaultRefreshInterval"/>. A value of <c>0</c> disables
+	/// presence monitoring. Positive values must be greater than
+	/// <see cref="MinimumRefreshInterval"/>; invalid values fall back to
+	/// <see cref="DefaultRefreshInterval"/>.
 	/// </value>
+	/// <remarks>
+	/// Smaller intervals provide more frequent presence updates but increase network and
+	/// server activity. Larger intervals reduce that activity at the cost of less
+	/// immediate presence information.
+	/// </remarks>
 	public int RefreshInterval { get; set; } = DefaultRefreshInterval;
 
 }
