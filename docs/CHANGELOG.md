@@ -12,6 +12,19 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.7.0] - 2026-08-23
+
+### Added
+
+* **`InvocationConnectionMetadata`** — endpoint metadata marking an endpoint as one whose
+  invocations arrive over an `IInvocationConnection`. The server spine stamps it on the connection endpoints it
+  maps, and an application may stamp it on a transport of its own. Authentication consults it
+  to decide whether a query-carried bearer credential is acceptable on a request, which a
+  browser has no alternative to on a WebSocket upgrade. Declared alongside the rest of the
+  connection vocabulary, and free of any framework dependency, so that the spine that stamps
+  it and the authentication schemes that read it reach it without either referencing the other.
+
+
 ## [4.6.0] - 2026-08-23
 
 ### Added
