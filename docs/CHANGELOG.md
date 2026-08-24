@@ -12,6 +12,30 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [4.6.0] - 2026-08-23
+
+### Added
+
+* **`RemoteConnectionOptions`** — configured options for a remote connection, the long-lived
+  counterpart to `RemoteServiceOptions`. Carries the endpoint Uri, application name, the
+  credential posture (`AuthorizationHeader` / `AccessTokenProvider`), and the reconnect knobs
+  (`Reconnect`, `ReconnectMaxDelay`). Implements `IEquatable<RemoteConnectionOptions>` so
+  registration can treat a repeated identical registration as a no-op and a conflicting one as
+  an error.
+* **`IRemoteConnectionTokenSource`** — supplies the access token for connections whose options
+  do not specify credentials explicitly. Host runtimes register an implementation against
+  whatever identity source that host provides, which is what lets a connection package stay
+  host-neutral.
+* **`IRemoteConnectionFactory<TConnection>`** — creates per-session connection instances for
+  cases where a connection belongs to a session rather than to the application, such as one
+  outbound connection per active call. Created instances are owned by the caller.
+
+### Fixed
+
+* **`IRemoteConnection` documentation** — removed a reference to a package family that was
+  never published, left behind by an earlier restructure. The remarks now describe the
+  transport-agnostic contract without naming packages.
+
 ## [4.5.1] - 2026-08-20
 
 ### Updated

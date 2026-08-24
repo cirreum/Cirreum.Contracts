@@ -13,9 +13,9 @@ namespace Cirreum.RemoteServices;
 /// connection is needed.
 /// </para>
 /// <para>
-/// The interface is intentionally transport-agnostic — concrete impls in the
-/// <c>Cirreum.Runtime.Invocation.{Source}.Wasm</c> family adapt SignalR's
-/// <c>HubConnection</c>, raw <c>ClientWebSocket</c>, or other transports onto this contract.
+/// The interface is transport-agnostic. Implementations adapt a specific transport — a SignalR
+/// hub connection, a raw WebSocket, or another long-lived channel — onto this contract, and
+/// surface any capability their transport provides beyond it.
 /// </para>
 /// </remarks>
 public interface IRemoteConnection {
