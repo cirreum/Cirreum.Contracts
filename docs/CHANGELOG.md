@@ -12,6 +12,30 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Breaking
+
+* **`IRemoteConnectionTokenSource.GetAccessTokenAsync` takes a `RemoteConnectionTokenRequest`.**
+  The parameterless signature is replaced rather than overloaded. A source had no way to know
+  which connection it was minting for, so it could answer only one way for every connection in
+  the application — and where the host could not infer an audience, it answered with whatever its
+  defaults produced. A source that cannot see the request cannot be right about it, and an
+  overload retained for compatibility would have kept that shape reachable.
+
+  Implementations take the request and read `Scopes`, `EndpointUri` and `ConnectionName` from it.
+  See [MIGRATION-v5.md](MIGRATION-v5.md).
+
+### Added
+
+* **`RemoteConnectionTokenRequest`** — the connection an access token is being obtained for:
+  endpoint, the scopes its options declare, and the connection type's name. `ConnectionName` has
+  no reader in this release. The token source is resolved in the transport packages, which never
+  see the connection's generic type, so a key must travel with the request or resolving a source
+  per connection later would break this contract a second time.
+* **`RemoteConnectionOptions.Scopes`** — the scopes a connection's access token is requested for,
+  empty by default. Included in equality and hash, so two registrations of one connection type
+  differing only by scope are the conflict they are rather than a silent no-op.
+
+
 ## [4.7.0] - 2026-08-23
 
 ### Added

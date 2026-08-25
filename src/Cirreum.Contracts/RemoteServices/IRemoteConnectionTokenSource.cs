@@ -10,9 +10,13 @@ namespace Cirreum.RemoteServices;
 public interface IRemoteConnectionTokenSource {
 
 	/// <summary>
-	/// Resolve the current access token, or <see langword="null"/> when no token is available.
+	/// Resolve the access token for the connection described by <paramref name="request"/>, or
+	/// <see langword="null"/> when no token is available.
 	/// </summary>
+	/// <param name="request">The connection the token is being obtained for.</param>
 	/// <param name="cancellationToken">Cancellation token for the resolution.</param>
-	ValueTask<string?> GetAccessTokenAsync(CancellationToken cancellationToken = default);
+	ValueTask<string?> GetAccessTokenAsync(
+		RemoteConnectionTokenRequest request,
+		CancellationToken cancellationToken = default);
 
 }

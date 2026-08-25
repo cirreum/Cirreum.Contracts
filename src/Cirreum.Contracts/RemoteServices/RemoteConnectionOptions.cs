@@ -83,6 +83,16 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 	public Func<CancellationToken, ValueTask<string?>>? AccessTokenProvider { get; set; }
 
 	/// <summary>
+	/// Gets or sets the scopes the connection's access token is requested for.
+	/// </summary>
+	/// <remarks>
+	/// Read by the ambient <see cref="IRemoteConnectionTokenSource"/>. A host that cannot
+	/// determine an audience without them declines to supply a token rather than presenting one
+	/// for an audience the application did not name.
+	/// </remarks>
+	public IReadOnlyList<string> Scopes { get; set; } = [];
+
+	/// <summary>
 	/// Gets or sets whether the connection re-establishes itself automatically after an
 	/// unexpected close. Default: <see langword="true"/>.
 	/// </summary>
@@ -118,6 +128,7 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 			   this.EndpointUri.Equals(other.EndpointUri) &&
 			   Equals(this.AuthorizationHeader, other.AuthorizationHeader) &&
 			   Equals(this.AccessTokenProvider, other.AccessTokenProvider) &&
+			   this.Scopes.SequenceEqual(other.Scopes) &&
 			   this.Reconnect == other.Reconnect &&
 			   this.ReconnectMaxDelay == other.ReconnectMaxDelay;
 	}
@@ -147,6 +158,9 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 		hash.Add(this.EndpointUri);
 		hash.Add(this.AuthorizationHeader);
 		hash.Add(this.AccessTokenProvider);
+		foreach (var scope in this.Scopes) {
+			hash.Add(scope);
+		}
 		hash.Add(this.Reconnect);
 		hash.Add(this.ReconnectMaxDelay);
 

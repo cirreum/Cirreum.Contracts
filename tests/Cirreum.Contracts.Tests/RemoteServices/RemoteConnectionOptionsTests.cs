@@ -87,6 +87,60 @@ public class RemoteConnectionOptionsTests {
 	}
 
 	[Fact]
+	public void DifferentScopes_AreNotEqual() {
+
+		var a = Options();
+		a.Scopes = ["api://one/.default"];
+
+		var b = Options();
+		b.Scopes = ["api://two/.default"];
+
+		a.Should().NotBe(b);
+
+	}
+
+	[Fact]
+	public void SameScopes_AreEqual() {
+
+		var a = Options();
+		a.Scopes = ["api://one/.default", "api://one/extra"];
+
+		var b = Options();
+		b.Scopes = ["api://one/.default", "api://one/extra"];
+
+		// Distinct list instances carrying the same scopes are the same registration.
+		a.Should().Be(b);
+		a.GetHashCode().Should().Be(b.GetHashCode());
+
+	}
+
+	[Fact]
+	public void ScopeOrder_IsSignificant() {
+
+		var a = Options();
+		a.Scopes = ["one", "two"];
+
+		var b = Options();
+		b.Scopes = ["two", "one"];
+
+		// Order is carried through to the token request verbatim, so it is part of the value.
+		a.Should().NotBe(b);
+
+	}
+
+	[Fact]
+	public void DeclaringScopes_DiffersFromDeclaringNone() {
+
+		var declared = Options();
+		declared.Scopes = ["api://one/.default"];
+
+		// The empty default means "the host was told no audience" — a different registration,
+		// not an unset field that happens to match.
+		declared.Should().NotBe(Options());
+
+	}
+
+	[Fact]
 	public void NullComparand_IsNotEqual() {
 		Options().Equals(null).Should().BeFalse();
 	}
