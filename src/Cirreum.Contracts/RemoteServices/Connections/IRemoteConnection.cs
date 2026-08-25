@@ -1,4 +1,4 @@
-namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Caller-side typed handle to a long-lived bidirectional connection with a remote endpoint.

@@ -1,4 +1,4 @@
-﻿namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Event payload for <see cref="IRemoteConnection.StateChanged"/>.

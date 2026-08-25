@@ -1,15 +1,40 @@
 # Cirreum.Contracts v4 → v5 Migration
 
-v5 breaks the outbound-connection credential surface, and nothing else. If your application does not
-implement `IRemoteConnectionTokenSource` and does not set `RemoteConnectionOptions.AccessTokenProvider`,
-upgrading is a version bump.
+v5 breaks the outbound-connection surface, and nothing else. Two changes:
 
-Both members shipped in 4.6.0. The break is taken now, while the surface is days old, precisely so it
-is not taken later against more consumers.
+1. The connection types move to a `Cirreum.RemoteServices.Connections` namespace — a `using`, for
+   anyone who touches them.
+2. The credential seam is reshaped — real work, but only for an application that implements
+   `IRemoteConnectionTokenSource` or sets `RemoteConnectionOptions.AccessTokenProvider`.
+
+Everything involved shipped in 4.6.0. The break is taken now, while the surface is days old,
+precisely so it is not taken later against more consumers.
 
 ---
 
-## Breaking changes — find/replace
+## Namespace move
+
+| v4 | v5 |
+| --- | --- |
+| `using Cirreum.RemoteServices;` | `using Cirreum.RemoteServices.Connections;` |
+
+Moved: `IRemoteConnection`, `RemoteConnectionState`, `RemoteConnectionStateChangedEventArgs`,
+`RemoteConnectionOptions`, `IRemoteConnectionFactory<TConnection>`,
+`IRemoteConnectionCredentialSource`, `RemoteConnectionTokenRequest`.
+
+Not moved: `AuthorizationHeaderSettings`, `RemoteIdentityConstants`, `RemoteServiceOptions`,
+`ResponseWithHeaders<T>`. A file that touches both halves — implementing a credential source, for
+instance — imports both namespaces.
+
+A remote service is something you *call*: the exchange is the unit of work, and the caller always
+initiates. A remote connection is something you *hold open*: the channel is the unit, it has a
+lifetime the application observes, and either end may speak first. The second is a relationship with
+a remote service rather than a peer of one, so it nests. The inbound side already reads this way —
+`Cirreum.Invocation.Connections` holds the long-lived sub-types of `Cirreum.Invocation`.
+
+---
+
+## Credential surface — find/replace
 
 | v4 | v5 |
 | --- | --- |
@@ -141,8 +166,9 @@ connection relied on the host defaults, declare them explicitly on its options.
 
 - The credential resolution order: `CredentialProvider`, then `AuthorizationHeader`, then the ambient
   source. An application already setting `AuthorizationHeader` is unaffected by all of the above.
-- `IRemoteConnection`, `IRemoteConnectionFactory<TConnection>`, and every other member of
-  `RemoteConnectionOptions`.
+- The shape of `IRemoteConnection`, `IRemoteConnectionFactory<TConnection>`, and every member of
+  `RemoteConnectionOptions` other than the credential slot — all three moved namespace, but no
+  member of them changed.
 
 ## Downstream package impact
 

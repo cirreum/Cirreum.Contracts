@@ -1,4 +1,4 @@
-namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Supplies the credential attached to outbound remote connections whose options do not specify

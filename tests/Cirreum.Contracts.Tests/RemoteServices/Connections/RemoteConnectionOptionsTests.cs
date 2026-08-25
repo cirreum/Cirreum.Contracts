@@ -1,6 +1,7 @@
-namespace Cirreum.Contracts.Tests.RemoteServices;
+namespace Cirreum.Contracts.Tests.RemoteServices.Connections;
 
 using Cirreum.RemoteServices;
+using Cirreum.RemoteServices.Connections;
 
 public class RemoteConnectionOptionsTests {
 

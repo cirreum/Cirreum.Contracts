@@ -1,4 +1,4 @@
-namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Creates per-session instances of a registered remote connection type.

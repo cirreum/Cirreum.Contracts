@@ -14,6 +14,20 @@ guides linked at the bottom of each entry.
 
 ### Breaking
 
+* **The connection types move to `Cirreum.RemoteServices.Connections`.** `IRemoteConnection`,
+  `RemoteConnectionState`, `RemoteConnectionStateChangedEventArgs`, `RemoteConnectionOptions`,
+  `IRemoteConnectionFactory<TConnection>`, `IRemoteConnectionCredentialSource` and
+  `RemoteConnectionTokenRequest` are no longer in `Cirreum.RemoteServices`.
+
+  A remote service is something you call — the exchange is the unit of work and the caller always
+  initiates. A remote connection is something you hold open — the channel is the unit, it has a
+  lifetime the application observes, and either end may speak first. The second is a *relationship
+  with* a remote service rather than a peer of one, so it nests rather than sitting alongside.
+
+  This mirrors the inbound side, where `Cirreum.Invocation.Connections` already holds the
+  long-lived sub-types of `Cirreum.Invocation`. `AuthorizationHeaderSettings` and
+  `RemoteIdentityConstants` stay in the parent namespace, which both halves use.
+
 * **`IRemoteConnectionTokenSource` becomes `IRemoteConnectionCredentialSource`**, and
   `GetAccessTokenAsync(CancellationToken)` becomes
   `GetCredentialAsync(RemoteConnectionTokenRequest, CancellationToken)` returning

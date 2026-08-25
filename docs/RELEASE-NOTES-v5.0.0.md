@@ -16,6 +16,21 @@ hit exactly that and worked the answer out from source.
 The interface was four days old. This release fixes it once, and widens the surface far enough that
 the foreseeable reasons to break it again are gone.
 
+## The connection types get their own namespace
+
+`IRemoteConnection` and its six companions move from `Cirreum.RemoteServices` to
+`Cirreum.RemoteServices.Connections`.
+
+A remote service is something you *call* — the exchange is the unit of work, the caller always
+initiates. A remote connection is something you *hold open* — the channel is the unit, it has a
+lifetime the application observes, and either end may speak first. The second is a relationship with
+a remote service rather than a peer of one, so it nests rather than sitting alongside. The inbound
+side already reads this way: `Cirreum.Invocation.Connections` holds the long-lived sub-types of
+`Cirreum.Invocation`.
+
+`AuthorizationHeaderSettings` and `RemoteIdentityConstants` stay in the parent, which both halves
+use. A file touching both — a credential source, typically — imports both namespaces.
+
 ## What's new
 
 **`RemoteConnectionTokenRequest`** describes the connection a credential is being obtained for —
@@ -83,7 +98,8 @@ opened by objecting to.
 
 ## Compatibility
 
-- **Applications that implement neither member**: a version bump, nothing more.
+- **Every application touching a connection type**: one `using` for the new namespace.
+- **Applications that implement neither credential member**: the `using`, and nothing else.
 - **Applications setting `AuthorizationHeader`** on a connection's options: unaffected. That posture
   resolves ahead of both and is unchanged.
 - **Applications implementing the source or setting the callback**: mechanical changes, both in the

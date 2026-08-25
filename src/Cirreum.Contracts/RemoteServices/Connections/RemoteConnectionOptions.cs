@@ -1,4 +1,4 @@
-﻿namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Configured options for a given remote connection.
