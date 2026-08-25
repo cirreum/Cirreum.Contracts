@@ -1,19 +1,25 @@
 # Cirreum.Contracts v4 → v5 Migration
 
-v5 carries one breaking change: **`IRemoteConnectionTokenSource.GetAccessTokenAsync` now takes a
-`RemoteConnectionTokenRequest`.**
+v5 breaks the outbound-connection credential surface, and nothing else. If your application does not
+implement `IRemoteConnectionTokenSource` and does not set `RemoteConnectionOptions.AccessTokenProvider`,
+upgrading is a version bump.
 
-Nothing else in the contract surface moves. If your application does not implement
-`IRemoteConnectionTokenSource`, upgrading is a version bump and nothing else — the interface shipped
-in 4.6.0 and the host runtimes are its only framework implementors.
+Both members shipped in 4.6.0. The break is taken now, while the surface is days old, precisely so it
+is not taken later against more consumers.
 
 ---
 
-## Breaking change — find/replace
+## Breaking changes — find/replace
 
 | v4 | v5 |
 | --- | --- |
-| `ValueTask<string?> GetAccessTokenAsync(CancellationToken ct = default)` | `ValueTask<string?> GetAccessTokenAsync(RemoteConnectionTokenRequest request, CancellationToken ct = default)` |
+| `IRemoteConnectionTokenSource` | `IRemoteConnectionCredentialSource` |
+| `GetAccessTokenAsync(CancellationToken ct)` | `GetCredentialAsync(RemoteConnectionTokenRequest request, CancellationToken ct)` |
+| returns `ValueTask<string?>` | returns `ValueTask<AuthorizationHeaderSettings?>` |
+| `RemoteConnectionOptions.AccessTokenProvider` | `RemoteConnectionOptions.CredentialProvider` |
+| `Func<CancellationToken, ValueTask<string?>>` | `Func<CancellationToken, ValueTask<AuthorizationHeaderSettings?>>` |
+
+### A token source
 
 ```csharp
 // v4
@@ -29,9 +35,9 @@ public sealed class ApiTokenSource(IAccessTokenProvider tokens) : IRemoteConnect
 }
 
 // v5
-public sealed class ApiTokenSource(IAccessTokenProvider tokens) : IRemoteConnectionTokenSource {
+public sealed class ApiTokenSource(IAccessTokenProvider tokens) : IRemoteConnectionCredentialSource {
 
-    public async ValueTask<string?> GetAccessTokenAsync(
+    public async ValueTask<AuthorizationHeaderSettings?> GetCredentialAsync(
         RemoteConnectionTokenRequest request, CancellationToken ct = default) {
 
         if (request.Scopes.Count == 0) {
@@ -41,35 +47,62 @@ public sealed class ApiTokenSource(IAccessTokenProvider tokens) : IRemoteConnect
         var result = await tokens.RequestAccessToken(new AccessTokenRequestOptions {
             Scopes = request.Scopes,
         });
-        return result.TryGetToken(out var token) ? token.Value : null;
+
+        return result.TryGetToken(out var token)
+            ? new AuthorizationHeaderSettings { Scheme = "Bearer", Value = token.Value }
+            : null;
     }
 
 }
 ```
 
-The request carries three things:
+### A per-connection callback
+
+```csharp
+// v4
+options.AccessTokenProvider = async ct => await this.GetTokenAsync(ct);
+
+// v5
+options.CredentialProvider = async ct =>
+    new AuthorizationHeaderSettings { Scheme = "Bearer", Value = await this.GetTokenAsync(ct) };
+```
+
+## What the request carries
 
 | Member | Use |
 | --- | --- |
-| `Scopes` | The scopes the connection's options declare. Empty when the application named none. |
 | `EndpointUri` | The endpoint being connected to, for a source that resolves an audience from the host. |
-| `ConnectionName` | The connection type's name. Has no framework reader in this release; present so that resolving a token source per connection later does not break this contract again. |
+| `Scopes` | The scopes the connection's options declare. Empty when the application named none. |
+| `ConnectionType` | The connection type, and the key a source may be registered against. |
 
-## Why the signature changed rather than gained an overload
+It is declared with required init-only properties, not positionally, so future members are additive:
 
-A parameterless source cannot know which connection it is minting for, so one registration answered
-identically for every connection in the application. Where the host could not infer an audience it
-answered with whatever its defaults produced — which for the WASM runtime meant a Microsoft Graph
-token, rejected by any first-party API, with the rejection surfacing as an application
-authentication problem rather than a misconfigured credential.
+```csharp
+var request = new RemoteConnectionTokenRequest {
+    EndpointUri = new Uri("https://api.contoso.com/hubs/chat"),
+    Scopes = ["api://contoso/access_as_user"],
+    ConnectionType = typeof(ChatConnection),
+};
+```
 
-An overload kept for compatibility would have left that shape reachable, and a source implementing
-only the old one would silently ignore scopes it was given.
+## Three return values, three meanings
 
-## New capability — scopes on the options
+`GetCredentialAsync` and `CredentialProvider` share one convention:
 
-`RemoteConnectionOptions.Scopes` lets an application name the audience per connection, with no token
-source to write:
+| Return | Meaning |
+| --- | --- |
+| a populated `AuthorizationHeaderSettings` | present this credential |
+| `AuthorizationHeaderSettings.None` | connect without a credential, deliberately |
+| `null` | no credential is available |
+
+v4's `string?` could not express the middle case from the ambient source. Declining and failing were
+the same answer.
+
+## New capabilities
+
+### Scopes on the options
+
+Name the audience per connection, with no source to write:
 
 ```csharp
 builder.AddRemoteConnection<ChatConnection>(options => {
@@ -81,27 +114,41 @@ builder.AddRemoteConnection<ChatConnection>(options => {
 `Scopes` participates in equality, so registering one connection type twice with different scopes is
 a conflict rather than a silent no-op — the same rule that already applied to the endpoint.
 
+### A source per connection
+
+Register keyed by connection type when one connection needs a different mechanism or identity
+provider than another. The keyed registration is preferred; the unkeyed one remains the fallback.
+
+```csharp
+services.AddKeyedScoped<IRemoteConnectionCredentialSource, PartnerCredentialSource>(typeof(PartnerConnection));
+```
+
+### Non-bearer credentials
+
+The ambient source can now supply any scheme — an ApiKey credential, for instance — where v4 could
+only return a bearer token.
+
 ## Behavioural change to expect from the host runtime
 
 Paired with `Cirreum.Runtime.Wasm`, a connection that declares **no** scopes no longer receives the
 host's default-scope token. The source returns nothing and logs, so the connection fails at connect
 with a named cause instead of being refused later by a server that did not recognise the audience.
 
-If a connection relied on the host defaults, declare them explicitly on its options.
+Under v4 that default produced a Microsoft Graph token, which no first-party API accepts. If a
+connection relied on the host defaults, declare them explicitly on its options.
 
 ## What didn't change
 
-- The credential resolution order: `AccessTokenProvider`, then `AuthorizationHeader`, then the
-  ambient `IRemoteConnectionTokenSource`. An application already supplying either of the first two
-  is unaffected by everything above.
-- `IRemoteConnection`, `RemoteConnectionOptions` (other than the added `Scopes`), and
-  `IRemoteConnectionFactory<TConnection>`.
+- The credential resolution order: `CredentialProvider`, then `AuthorizationHeader`, then the ambient
+  source. An application already setting `AuthorizationHeader` is unaffected by all of the above.
+- `IRemoteConnection`, `IRemoteConnectionFactory<TConnection>`, and every other member of
+  `RemoteConnectionOptions`.
 
 ## Downstream package impact
 
 | Package | Minimum version |
 | --- | --- |
 | `Cirreum.Domain` | the release that bumps its Contracts floor to 5.0.0 |
-| `Cirreum.RemoteConnections.SignalR` / `.WebSockets` | the release that builds the request from options |
-| `Cirreum.Runtime.Wasm` | the release carrying the scope-aware token source |
-| `Cirreum.Runtime.RemoteConnections.SignalR` / `.WebSockets` | the release that stamps `ConnectionName` |
+| `Cirreum.RemoteConnections.SignalR` / `.WebSockets` | the release that builds the request and resolves the source |
+| `Cirreum.Runtime.Wasm` | the release carrying the scope-aware credential source |
+| `Cirreum.Runtime.RemoteConnections.SignalR` / `.WebSockets` | the release that stamps `ConnectionType` |

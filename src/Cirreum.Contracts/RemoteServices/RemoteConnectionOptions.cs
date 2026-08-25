@@ -1,4 +1,4 @@
-namespace Cirreum.RemoteServices;
+﻿namespace Cirreum.RemoteServices;
 
 /// <summary>
 /// Configured options for a given remote connection.
@@ -9,8 +9,8 @@ namespace Cirreum.RemoteServices;
 /// the caller.
 /// </para>
 /// <para>
-/// Credentials resolve in a fixed order: <see cref="AccessTokenProvider"/> when set, then
-/// <see cref="AuthorizationHeader"/>, then the ambient <see cref="IRemoteConnectionTokenSource"/>
+/// Credentials resolve in a fixed order: <see cref="CredentialProvider"/> when set, then
+/// <see cref="AuthorizationHeader"/>, then the ambient <see cref="IRemoteConnectionCredentialSource"/>
 /// registered by the host.
 /// </para>
 /// </remarks>
@@ -75,18 +75,20 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 	public AuthorizationHeaderSettings? AuthorizationHeader { get; set; }
 
 	/// <summary>
-	/// Gets or sets an optional callback that supplies the access token for this connection.
+	/// Gets or sets an optional callback that supplies the credential for this connection.
 	/// </summary>
 	/// <remarks>
-	/// Invoked before every connect and reconnect attempt.
+	/// Invoked before every connect and reconnect attempt. Return
+	/// <see cref="AuthorizationHeaderSettings.None"/> to connect without a credential, or
+	/// <see langword="null"/> when none is available.
 	/// </remarks>
-	public Func<CancellationToken, ValueTask<string?>>? AccessTokenProvider { get; set; }
+	public Func<CancellationToken, ValueTask<AuthorizationHeaderSettings?>>? CredentialProvider { get; set; }
 
 	/// <summary>
-	/// Gets or sets the scopes the connection's access token is requested for.
+	/// Gets or sets the scopes the connection's credential is requested for.
 	/// </summary>
 	/// <remarks>
-	/// Read by the ambient <see cref="IRemoteConnectionTokenSource"/>. A host that cannot
+	/// Read by the ambient <see cref="IRemoteConnectionCredentialSource"/>. A host that cannot
 	/// determine an audience without them declines to supply a token rather than presenting one
 	/// for an audience the application did not name.
 	/// </remarks>
@@ -113,7 +115,7 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 	/// </returns>
 	/// <remarks>
 	/// Two instances are considered equal if all their properties are equal.
-	/// <see cref="AccessTokenProvider"/> is compared by delegate equality.
+	/// <see cref="CredentialProvider"/> is compared by delegate equality.
 	/// </remarks>
 	public bool Equals(RemoteConnectionOptions? other) {
 		if (other is null) {
@@ -127,7 +129,7 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 		return this.ApplicationName == other.ApplicationName &&
 			   this.EndpointUri.Equals(other.EndpointUri) &&
 			   Equals(this.AuthorizationHeader, other.AuthorizationHeader) &&
-			   Equals(this.AccessTokenProvider, other.AccessTokenProvider) &&
+			   Equals(this.CredentialProvider, other.CredentialProvider) &&
 			   this.Scopes.SequenceEqual(other.Scopes) &&
 			   this.Reconnect == other.Reconnect &&
 			   this.ReconnectMaxDelay == other.ReconnectMaxDelay;
@@ -157,7 +159,7 @@ public class RemoteConnectionOptions : IEquatable<RemoteConnectionOptions> {
 		hash.Add(this.ApplicationName);
 		hash.Add(this.EndpointUri);
 		hash.Add(this.AuthorizationHeader);
-		hash.Add(this.AccessTokenProvider);
+		hash.Add(this.CredentialProvider);
 		foreach (var scope in this.Scopes) {
 			hash.Add(scope);
 		}

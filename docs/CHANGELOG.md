@@ -14,27 +14,41 @@ guides linked at the bottom of each entry.
 
 ### Breaking
 
-* **`IRemoteConnectionTokenSource.GetAccessTokenAsync` takes a `RemoteConnectionTokenRequest`.**
-  The parameterless signature is replaced rather than overloaded. A source had no way to know
-  which connection it was minting for, so it could answer only one way for every connection in
-  the application — and where the host could not infer an audience, it answered with whatever its
-  defaults produced. A source that cannot see the request cannot be right about it, and an
-  overload retained for compatibility would have kept that shape reachable.
+* **`IRemoteConnectionTokenSource` becomes `IRemoteConnectionCredentialSource`**, and
+  `GetAccessTokenAsync(CancellationToken)` becomes
+  `GetCredentialAsync(RemoteConnectionTokenRequest, CancellationToken)` returning
+  `AuthorizationHeaderSettings?`.
 
-  Implementations take the request and read `Scopes`, `EndpointUri` and `ConnectionName` from it.
+  A source had no way to know which connection it was minting for, so it answered identically for
+  every connection in the application — and where the host could not infer an audience, it answered
+  with whatever its defaults produced. A source that cannot see the request cannot be right about
+  it, and an overload retained for compatibility would have kept that shape reachable.
+
+  The return type widens with the name: the ambient source now expresses any authorization scheme,
+  not only bearer, which is what an ApiKey-authenticated host needs and what the deferred
+  server-host source would otherwise have forced a second major to reach.
+
+* **`RemoteConnectionOptions.AccessTokenProvider` becomes `CredentialProvider`**, returning
+  `AuthorizationHeaderSettings?` rather than `string?`. The per-connection slot and the ambient
+  source express the same thing; widening one and not the other would leave them to diverge.
+
+  Bearer callers wrap the token: `new() { Scheme = "Bearer", Value = token }`.
+
   See [MIGRATION-v5.md](MIGRATION-v5.md).
 
 ### Added
 
-* **`RemoteConnectionTokenRequest`** — the connection an access token is being obtained for:
-  endpoint, the scopes its options declare, and the connection type's name. `ConnectionName` has
-  no reader in this release. The token source is resolved in the transport packages, which never
-  see the connection's generic type, so a key must travel with the request or resolving a source
-  per connection later would break this contract a second time.
-* **`RemoteConnectionOptions.Scopes`** — the scopes a connection's access token is requested for,
+* **`RemoteConnectionTokenRequest`** — the connection a credential is being obtained for:
+  `EndpointUri`, `Scopes`, and `ConnectionType`. Declared with required init-only properties rather
+  than positionally, so a later addition — whether the call is an initial connect or a reconnect,
+  for instance — is additive rather than another major.
+
+  `ConnectionType` is also the key a source may be registered against, so a host can supply a
+  different credential mechanism per connection.
+
+* **`RemoteConnectionOptions.Scopes`** — the scopes a connection's credential is requested for,
   empty by default. Included in equality and hash, so two registrations of one connection type
   differing only by scope are the conflict they are rather than a silent no-op.
-
 
 ## [4.7.0] - 2026-08-23
 

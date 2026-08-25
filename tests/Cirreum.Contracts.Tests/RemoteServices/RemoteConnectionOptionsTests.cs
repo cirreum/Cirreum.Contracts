@@ -7,6 +7,9 @@ public class RemoteConnectionOptionsTests {
 	private static RemoteConnectionOptions Options(string endpoint = "https://example.test/hub") =>
 		new("TestApp", new Uri(endpoint));
 
+	private static AuthorizationHeaderSettings Bearer(string value) =>
+		new() { Scheme = "Bearer", Value = value };
+
 	// Equality — the registration dedup rule depends on it ——————————————————
 
 	[Fact]
@@ -66,22 +69,23 @@ public class RemoteConnectionOptionsTests {
 	}
 
 	[Fact]
-	public void SameAccessTokenProviderInstance_AreEqual() {
-		Func<CancellationToken, ValueTask<string?>> provider = _ => ValueTask.FromResult<string?>("token");
+	public void SameCredentialProviderInstance_AreEqual() {
+		Func<CancellationToken, ValueTask<AuthorizationHeaderSettings?>> provider =
+			_ => ValueTask.FromResult<AuthorizationHeaderSettings?>(Bearer("token"));
 		var left = Options();
 		var right = Options();
-		left.AccessTokenProvider = provider;
-		right.AccessTokenProvider = provider;
+		left.CredentialProvider = provider;
+		right.CredentialProvider = provider;
 
 		left.Should().Be(right);
 	}
 
 	[Fact]
-	public void DifferentAccessTokenProviderInstances_AreNotEqual() {
+	public void DifferentCredentialProviderInstances_AreNotEqual() {
 		var left = Options();
 		var right = Options();
-		left.AccessTokenProvider = _ => ValueTask.FromResult<string?>("token");
-		right.AccessTokenProvider = _ => ValueTask.FromResult<string?>("token");
+		left.CredentialProvider = _ => ValueTask.FromResult<AuthorizationHeaderSettings?>(Bearer("token"));
+		right.CredentialProvider = _ => ValueTask.FromResult<AuthorizationHeaderSettings?>(Bearer("token"));
 
 		left.Should().NotBe(right);
 	}
@@ -171,7 +175,7 @@ public class RemoteConnectionOptionsTests {
 		var options = new RemoteConnectionOptions();
 
 		options.AuthorizationHeader.Should().BeNull();
-		options.AccessTokenProvider.Should().BeNull();
+		options.CredentialProvider.Should().BeNull();
 	}
 
 	[Fact]
