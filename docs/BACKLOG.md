@@ -19,4 +19,25 @@ upgrade, a coordinated multi-repo rollout).
 
 ## Queued
 
-*(empty — the `ActivityKind` telemetry item shipped in the 2026-07-30 patch; see `docs/CHANGELOG.md`.)*
+### Rename `RemoteConnectionTokenRequest` to `RemoteConnectionCredentialRequest`
+
+**SemVer:** Patch
+**Trigger:** the next `Cirreum.Contracts` major — the rename itself is breaking and cannot ship below one.
+**Noted:** 2026-08-26
+
+5.0.0 widened the seam from tokens to credentials: `IRemoteConnectionTokenSource` became
+`IRemoteConnectionCredentialSource`, `GetAccessTokenAsync` became `GetCredentialAsync`, and the
+return type became `AuthorizationHeaderSettings?` so any authorization scheme can be expressed. The
+request record did not follow, so the surface reads
+`IRemoteConnectionCredentialSource.GetCredentialAsync(RemoteConnectionTokenRequest)` — a credential
+source taking a token request.
+
+Cosmetic, and it only gets more expensive: every consumer implementing a source names the type.
+
+**Listed at `Patch` deliberately, so it surfaces on every release rather than only when a Contracts
+major is already in flight — that release is rare, and this is exactly the item that gets forgotten
+between them. Executing it is a Major**, and no `[Obsolete]` staging: the old name is deleted
+outright.
+
+Fold into the typed-client-binding work if that lands as a Contracts-touching release, or into
+whatever forces the next major.
