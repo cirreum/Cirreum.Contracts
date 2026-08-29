@@ -12,6 +12,33 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Breaking
+
+* **`OperationGrant.Extensions` and `OperationGrantResult.Extensions` are typed
+  `IReadOnlyDictionary<string, IReadOnlyList<string>>`**, previously
+  `IReadOnlyDictionary<string, object>`. `OperationGrant.ForOwners` takes the same shape for its
+  `extensions` argument.
+
+  A grant is cached by value. A serializing cache provider deserializes it on every hit, while a
+  miss returns the resolver's instance directly — so an `object` value reached the handler as
+  whatever the application put there on the first request of a cache key's lifetime, and as a
+  `JsonElement` on every request after it. The shape depended on cache state and on which cache
+  provider the host had configured, and nothing in the type said so. A handler absorbed the
+  difference by testing the runtime type, where a value that failed the test was indistinguishable
+  from a dimension that had never been granted — leaving each call site to decide, from a failed
+  cast, whether an unreadable value meant deny or allow.
+
+  An auxiliary dimension names the values allowed for it, and a list of strings is the shape that
+  survives the round trip unchanged. The value type now says so, and both cache paths present the
+  same shape to handlers.
+
+  A set type was considered and rejected. `IReadOnlySet<string>` cannot be deserialized at all, and
+  `ISet<string>` deserializes without its comparer, so a case-insensitively populated dimension
+  would silently become case-sensitive across a cache hit. Comparison stays with the caller, which
+  is where the comparer is already chosen.
+
+  See [MIGRATION-v6](MIGRATION-v6.md).
+
 ## [5.0.0] - 2026-08-25
 
 ### Breaking

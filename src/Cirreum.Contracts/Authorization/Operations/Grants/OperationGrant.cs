@@ -30,11 +30,12 @@ namespace Cirreum.Authorization.Operations.Grants;
 /// </param>
 /// <param name="Extensions">
 /// Optional app-specific auxiliary dimensions (e.g., SSV codes, tiers, regions) that handlers
-/// may apply in addition to the owner filter. Keyed by app-chosen strings; opaque to Core.
+/// may apply in addition to the owner filter. Keyed by app-chosen strings, each carrying the
+/// values allowed for that dimension; opaque to Core.
 /// </param>
 public sealed record OperationGrant(
 	IReadOnlyList<string>? OwnerIds,
-	IReadOnlyDictionary<string, object>? Extensions = null) {
+	IReadOnlyDictionary<string, IReadOnlyList<string>>? Extensions = null) {
 
 	/// <summary>
 	/// Grant representing no access — the caller cannot touch any owner for this operation.
@@ -55,7 +56,7 @@ public sealed record OperationGrant(
 	/// <param name="extensions">Optional auxiliary dimensions to pass through to handlers.</param>
 	public static OperationGrant ForOwners(
 		IReadOnlyList<string> ownerIds,
-		IReadOnlyDictionary<string, object>? extensions = null) {
+		IReadOnlyDictionary<string, IReadOnlyList<string>>? extensions = null) {
 
 		ArgumentNullException.ThrowIfNull(ownerIds);
 		return ownerIds.Count == 0

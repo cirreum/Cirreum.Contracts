@@ -23,9 +23,9 @@ namespace Cirreum.Authorization.Operations.Grants;
 /// </param>
 /// <param name="Extensions">
 /// Optional app-specific auxiliary dimensions (e.g., SSV codes, tiers, regions) attached to
-/// the grants. Opaque to Core — handlers read these via <c>IOperationGrantAccessor</c> and apply
-/// them as additional predicate scope.
+/// the grants, each key carrying the values allowed for that dimension. Opaque to Core — handlers
+/// read these via <c>IOperationGrantAccessor</c> and apply them as additional predicate scope.
 /// </param>
 public sealed record OperationGrantResult(
 	IReadOnlyList<string> OwnerIds,
-	IReadOnlyDictionary<string, object>? Extensions = null);
+	IReadOnlyDictionary<string, IReadOnlyList<string>>? Extensions = null);
