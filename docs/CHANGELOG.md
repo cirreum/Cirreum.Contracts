@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [6.0.0] - 2026-08-29
+
 ### Breaking
 
 * **`OperationGrant.Extensions` and `OperationGrantResult.Extensions` are typed
