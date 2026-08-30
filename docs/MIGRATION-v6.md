@@ -79,3 +79,35 @@ makes no such promise.
 `OwnerIds` and the three distinguished shapes — denied, unrestricted, bounded — are untouched, as
 are `Contains`, `ContainsAll`, `IsDenied`, `IsUnrestricted`, and `IsBounded`. Extensions remain
 opaque to Core: no key or value is interpreted, and no meaning is assigned to an absent dimension.
+
+---
+
+## `RemoteConnectionTokenRequest` → `RemoteConnectionCredentialRequest`
+
+A rename, unrelated to grant extensions, folded in because it could only ship on a major.
+
+| v5 | v6 |
+| --- | --- |
+| `RemoteConnectionTokenRequest` | `RemoteConnectionCredentialRequest` |
+
+v5 widened this seam from tokens to credentials — `IRemoteConnectionTokenSource` became
+`IRemoteConnectionCredentialSource`, `GetAccessTokenAsync` became `GetCredentialAsync`, and the
+return type became `AuthorizationHeaderSettings?` so any authorization scheme can be expressed. The
+request record did not follow, so the surface read as a credential source taking a token request.
+
+The type's members are unchanged — `EndpointUri`, `Scopes`, `ConnectionType`, all `required
+init`-only. Only the name moved:
+
+```csharp
+// v5
+public ValueTask<AuthorizationHeaderSettings?> GetCredentialAsync(
+    RemoteConnectionTokenRequest request, CancellationToken ct = default) { ... }
+
+// v6
+public ValueTask<AuthorizationHeaderSettings?> GetCredentialAsync(
+    RemoteConnectionCredentialRequest request, CancellationToken ct = default) { ... }
+```
+
+A find-and-replace on the type name is the whole migration. It affects any application implementing
+`IRemoteConnectionCredentialSource`; an application that only consumes connections never names the
+type.

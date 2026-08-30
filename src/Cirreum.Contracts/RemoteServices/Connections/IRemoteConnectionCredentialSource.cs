@@ -1,4 +1,4 @@
-﻿namespace Cirreum.RemoteServices.Connections;
+namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Supplies the credential attached to outbound remote connections whose options do not specify
@@ -21,7 +21,7 @@ public interface IRemoteConnectionCredentialSource {
 	/// <see langword="null"/> when none is available.
 	/// </returns>
 	ValueTask<AuthorizationHeaderSettings?> GetCredentialAsync(
-		RemoteConnectionTokenRequest request,
+		RemoteConnectionCredentialRequest request,
 		CancellationToken cancellationToken = default);
 
 }

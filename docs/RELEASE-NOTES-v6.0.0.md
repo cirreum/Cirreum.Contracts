@@ -28,6 +28,14 @@ A set type was considered and rejected: `IReadOnlySet<string>` cannot be deseria
 silently become case-sensitive across a cache hit. Comparison stays with the caller, where the
 comparer is already chosen.
 
+## Also in this release
+
+`RemoteConnectionTokenRequest` is renamed to `RemoteConnectionCredentialRequest`, finishing the
+tokens-to-credentials rename 5.0.0 started — that release renamed the source interface and its
+method but left the request record behind, so the surface read as a credential source taking a token
+request. Members are unchanged; a find-and-replace on the type name is the whole migration, and only
+an application implementing `IRemoteConnectionCredentialSource` names it.
+
 ## Migrating
 
 Producers drop a cast; readers delete their shape-normalizing helper. Full steps, including the

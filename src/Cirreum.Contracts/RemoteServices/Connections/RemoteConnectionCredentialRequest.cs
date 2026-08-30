@@ -1,9 +1,9 @@
-﻿namespace Cirreum.RemoteServices.Connections;
+namespace Cirreum.RemoteServices.Connections;
 
 /// <summary>
 /// Describes the connection a credential is being obtained for.
 /// </summary>
-public sealed record RemoteConnectionTokenRequest {
+public sealed record RemoteConnectionCredentialRequest {
 
 	/// <summary>
 	/// Gets the absolute Uri of the remote endpoint.

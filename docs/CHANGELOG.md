@@ -37,6 +37,12 @@ guides linked at the bottom of each entry.
   would silently become case-sensitive across a cache hit. Comparison stays with the caller, which
   is where the comparer is already chosen.
 
+* **`RemoteConnectionTokenRequest` is renamed to `RemoteConnectionCredentialRequest`.** 5.0.0
+  widened the seam from tokens to credentials — `IRemoteConnectionTokenSource` became
+  `IRemoteConnectionCredentialSource`, `GetAccessTokenAsync` became `GetCredentialAsync`, and the
+  return type became `AuthorizationHeaderSettings?` — but the request record did not follow, leaving
+  a credential source that took a token request. No `[Obsolete]` staging; the old name is gone.
+
   See [MIGRATION-v6](MIGRATION-v6.md).
 
 ## [5.0.0] - 2026-08-25
