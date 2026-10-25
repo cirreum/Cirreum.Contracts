@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [6.1.0] - 2026-10-25
+
 ### Changed
 
 - **Authorization duration histograms record seconds, under new names.** Update dashboards,
