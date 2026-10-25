@@ -3,7 +3,6 @@ namespace Cirreum.Authorization;
 using Cirreum.Diagnostics;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Runtime.CompilerServices;
 
 /// <summary>
 /// Centralized telemetry for the Cirreum authorization pipeline. Publishes
@@ -162,11 +161,11 @@ public static class AuthorizationTelemetry {
 	/// <summary>Metric: total authorization decisions (tagged with stage/step/decision/reason).</summary>
 	public const string DecisionsTotalMetric = "cirreum.authz.decisions";
 
-	/// <summary>Metric: authorization pipeline duration in milliseconds.</summary>
-	public const string DurationMetric = "cirreum.authz.duration";
+	/// <summary>Metric: authorization pipeline duration in seconds.</summary>
+	public const string DurationMetric = "cirreum.authz.evaluation.duration";
 
-	/// <summary>Metric: grant resolution duration in milliseconds (L2/cold path only).</summary>
-	public const string GrantDurationMetric = "cirreum.authz.grant.duration";
+	/// <summary>Metric: grant resolution duration in seconds (L2/cold path only).</summary>
+	public const string GrantDurationMetric = "cirreum.authz.grant.resolution.duration";
 
 	/// <summary>Metric: grant resolution cache hit/miss counter.</summary>
 	public const string GrantCacheMetric = "cirreum.authz.grant.cache";
@@ -185,20 +184,21 @@ public static class AuthorizationTelemetry {
 
 	private static readonly Histogram<double> _durationHistogram = _meter.CreateHistogram<double>(
 		DurationMetric,
-		unit: "ms",
-		description: "Authorization pipeline processing duration in milliseconds");
+		unit: CirreumTelemetry.Histograms.DurationUnit,
+		description: "Authorization pipeline processing duration",
+		tags: null,
+		advice: CirreumTelemetry.Histograms.DurationAdvice);
 
 	private static readonly Histogram<double> _grantDurationHistogram = _meter.CreateHistogram<double>(
 		GrantDurationMetric,
-		unit: "ms",
-		description: "Grant resolution duration in milliseconds (L2/cold path)");
+		unit: CirreumTelemetry.Histograms.DurationUnit,
+		description: "Grant resolution duration (L2/cold path)",
+		tags: null,
+		advice: CirreumTelemetry.Histograms.DurationAdvice);
 
 	private static readonly Counter<long> _grantCacheCounter = _meter.CreateCounter<long>(
 		GrantCacheMetric,
 		description: "Grant resolution cache hit/miss counter");
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	internal static bool HasListeners() => ActivitySource.HasListeners();
 
 	// Activity Management ——————————————————————————————————
 
@@ -247,7 +247,7 @@ public static class AuthorizationTelemetry {
 			tags.Add(StageTag, denyStage);
 		}
 
-		_durationHistogram.Record(durationMs, tags);
+		_durationHistogram.Record(durationMs / 1000, tags);
 	}
 
 	// Grant Resolution ——————————————————————————————————
@@ -276,7 +276,7 @@ public static class AuthorizationTelemetry {
 		_grantCacheCounter.Add(1, tags);
 
 		if (durationMs.HasValue) {
-			_grantDurationHistogram.Record(durationMs.Value, tags);
+			_grantDurationHistogram.Record(durationMs.Value / 1000, tags);
 		}
 	}
 

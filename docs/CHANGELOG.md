@@ -12,6 +12,26 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Changed
+
+- **Authorization duration histograms record seconds, under new names.** Update dashboards,
+  alerts, and saved queries:
+
+  | Before (`ms`) | After (`s`) |
+  | ------------- | ----------- |
+  | `cirreum.authz.duration` | `cirreum.authz.evaluation.duration` |
+  | `cirreum.authz.grant.duration` | `cirreum.authz.grant.resolution.duration` |
+
+  Both use the shared `CirreumTelemetry.Histograms` unit and bucket boundaries, matching the
+  OpenTelemetry semantic conventions and the .NET built-in request-duration histograms. The names
+  changed with the unit so a query on the old name returns nothing rather than values 1000× off.
+  `AuthorizationTelemetry.DurationMetric` and `GrantDurationMetric` keep their names; their values
+  changed. `RecordDuration` and `RecordGrantResolution` still take milliseconds.
+
+### Updated
+
+- Re-pinned `Cirreum.Kernel` `2.2.1` → `2.3.0` for `CirreumTelemetry.Histograms`.
+
 ## [6.0.1] - 2026-10-25
 
 ### Updated
