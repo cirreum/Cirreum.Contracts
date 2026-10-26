@@ -12,6 +12,8 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+## [6.2.0] - 2026-10-26
+
 ### Added
 
 - **Host invocations.** `IHostInvocationFactory.Begin(HostInvocationOptions?)` establishes an
