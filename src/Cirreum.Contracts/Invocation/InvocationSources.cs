@@ -33,4 +33,10 @@ public static class InvocationSources {
 	/// <summary>Timer-triggered invocation (Azure Functions timer trigger, etc.).</summary>
 	public const string Timer = "timer";
 
+	/// <summary>
+	/// Work started by the host on its own behalf — a hosted service loop, a startup task, or
+	/// work continued after the inbound invocation that requested it has completed.
+	/// </summary>
+	public const string Host = "host";
+
 }

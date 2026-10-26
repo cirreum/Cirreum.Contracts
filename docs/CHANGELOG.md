@@ -12,6 +12,25 @@ guides linked at the bottom of each entry.
 
 ## [Unreleased]
 
+### Added
+
+- **Host invocations.** `IHostInvocationFactory.Begin(HostInvocationOptions?)` establishes an
+  `IInvocationContext` for work the host starts on its own behalf — a hosted service loop, a
+  startup task, a received message, or work continued after the request that asked for it has
+  completed. The invocation has its own service scope, cancellation tied to application
+  shutdown, no connection, and a principal that names the host application unless
+  `HostInvocationOptions.User` supplies the subject. `Roles` mints role claims for the work;
+  `OriginScheme` records how a supplied subject was established. `Begin` refuses to nest
+  inside a current invocation. Implementations ship in the server package.
+- **`StartDetached`** — extension over `IHostInvocationFactory` that suppresses
+  `ExecutionContext` flow, queues to the thread pool, and runs the work inside a host
+  invocation. The one ordering that makes the nesting check unreachable, shipped so callers do
+  not hand-roll it.
+- **`HostInvocationDefaults.Scheme`** (`Cirreum.Host`) — the scheme name stamped on every
+  host invocation and declared as a machine scheme.
+- **`InvocationSources.Host`** (`host`) — the source for work the host starts on its own
+  behalf. `Timer` and `Queue` keep their serverless-trigger meaning.
+
 ## [6.1.0] - 2026-10-25
 
 ### Changed
